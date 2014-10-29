@@ -4,17 +4,21 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Samples.XmlRpc;
 
 namespace CalculationNode
 {
     [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
     public class TokenRingCalculator : ICalculator
     {
+		public List<String> Fellows = new List<String>();
         public int CurrentValue { get; protected set; }
 
         public string[] Join(string address)
         {
-            throw new NotImplementedException();
+			ConsoleExtentions.Log("Join request from " + address);
+			Fellows.Add(address);
+			return Fellows.ToArray();
         }
 
         public string SingOff(string address)
@@ -46,5 +50,10 @@ namespace CalculationNode
         {
             CurrentValue *= param;
         }
+
+		public virtual string Echo(string param)
+		{
+			return param;
+		}
     }
 }

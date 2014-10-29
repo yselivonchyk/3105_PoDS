@@ -33,5 +33,8 @@ namespace CalculationNode
 
         [OperationContract(Action = "multiply")]
         void Multiply(int param);
+
+		[OperationContract(Action = "echo")]
+		string Echo(string param);
     }
 }
