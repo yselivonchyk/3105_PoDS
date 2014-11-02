@@ -7,7 +7,7 @@ namespace CalculationNode
 	/// </summary>
 	public interface IClient
 	{
-		void Join(Uri fellowAddress);
+		void Join(Uri knownNodeUri);
 
 		void SingOff(string address);
 

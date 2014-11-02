@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ServiceModel;
 using Microsoft.Samples.XmlRpc;
 
@@ -15,9 +13,10 @@ namespace CalculationNode
 
 		public static void Add(string address)
 		{
+			// put address into collection and create channelFactory for this address
 			if (!Fellows.ContainsKey(address))
 			{
-				ChannelFactory<IRicartAgrawalaServer> channelFactory = new ChannelFactory<IRicartAgrawalaServer>(
+				var channelFactory = new ChannelFactory<IRicartAgrawalaServer>(
 					new WebHttpBinding(WebHttpSecurityMode.None), new EndpointAddress(address));
 				channelFactory.Endpoint.Behaviors.Add(new XmlRpcEndpointBehavior());
 

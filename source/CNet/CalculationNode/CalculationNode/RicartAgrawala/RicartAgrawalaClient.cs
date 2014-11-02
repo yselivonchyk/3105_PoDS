@@ -12,6 +12,7 @@ namespace CalculationNode.RicartAgrawala
 	{
 		public RicartAgrawalaClient(Uri baseServerUri) : base(baseServerUri)
 		{
+			// Start local server to process request from other nodes
 			var localServerUri = BaseServerUri;
 			LocalServerAddress = localServerUri.ToString();
 			HostObject = new ServiceHost(typeof(RicartAgrawalaServer));
@@ -22,21 +23,22 @@ namespace CalculationNode.RicartAgrawala
 			Console.WriteLine("Ricard-Agrawala node listning at {0}", epXmlRpc.ListenUri);
 		}
 
-		public override void Join(Uri fellowAddress)
+		public override void Join(Uri knownNodeUri)
 		{
-			var fellowAddressString = fellowAddress.ToString();
-			// Set up client channel factory
-			PeersData.Add(fellowAddressString);
-
-			var calculator = PeersData.GetChannel(fellowAddressString);
-			var fellows = calculator.Join(LocalServerAddress).ToList().Where(x => !x.Equals(fellowAddressString));
-
-			foreach (var fellow in fellows)
+			// save information about known node
+			var knownNodeAddress = knownNodeUri.ToString();
+			PeersData.Add(knownNodeAddress);
+			// send join request to known node
+			var nodeProxy = PeersData.GetChannel(knownNodeAddress);
+			var allNodesAddresses = nodeProxy.Join(LocalServerAddress);
+			var undiscoveredNodesAddresses = allNodesAddresses.Where(x => !x.Equals(knownNodeAddress));
+			
+			foreach (var siblingAddress in undiscoveredNodesAddresses)
 			{
-				PeersData.Add(fellow);
-				var fellowChannel = PeersData.GetChannel(fellow);
-				var response = fellowChannel.Join(LocalServerAddress);
-				ConsoleExtentions.Log(String.Format("Got response with {0} items", response.Length));
+				PeersData.Add(siblingAddress);
+				var siblingProxy = PeersData.GetChannel(siblingAddress);
+				var joinResponse = siblingProxy.Join(LocalServerAddress);
+				ConsoleExtentions.Log(String.Format("Got response with {0} items", joinResponse.Length));
 				//response.ToList().ForEach(x => Console.WriteLine("{0} - {1}", fellow, x));
 			}
 		}

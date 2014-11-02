@@ -11,10 +11,10 @@ namespace CalculationNode
 
 		public ClientBase(Uri baseServerUri)
 		{
-			this.BaseServerUri = baseServerUri;
+			BaseServerUri = baseServerUri;
 		}
 
-		public abstract void Join(Uri fellowAddress);
+		public abstract void Join(Uri knownNodeUri);
 
 		public void SingOff(string address)
 		{
