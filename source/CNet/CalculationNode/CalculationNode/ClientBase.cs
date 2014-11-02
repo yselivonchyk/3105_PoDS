@@ -38,9 +38,23 @@ namespace CalculationNode
 				});
 		}
 
-		public void SingOff(string address)
+		public void SingOff()
 		{
-			
+			ConsoleExtentions.Log("Empty request recieved.");
+
+			foreach (var peer in PeersData.GetAll())
+			{
+				var siblingProxy = PeersData.GetChannel(peer);
+				siblingProxy.SingOff(LocalServerAddress);
+			}
+
+			Parallel.ForEach(PeersData.GetAll(),
+				peer =>
+				{
+					var siblingProxy = PeersData.GetChannel(peer);
+					siblingProxy.SingOff(LocalServerAddress);
+				});
+			PeersData.Empty();
 		}
 
 		public abstract void Start(int seed);

@@ -9,7 +9,7 @@ namespace CalculationNode
 	{
 		void Join(Uri knownNodeUri);
 
-		void SingOff(string address);
+		void SingOff();
 
 		void Start(int seed);
 

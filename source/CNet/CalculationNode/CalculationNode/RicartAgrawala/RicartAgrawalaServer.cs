@@ -17,9 +17,11 @@ namespace CalculationNode
 			return PeersData.GetAll();
         }
 
-        public string SingOff(string address)
+        public int SingOff(string address)
         {
-            return address + DateTime.Now.ToShortTimeString();
+			ConsoleExtentions.Log(String.Format("Sign off request from {0}", address));
+            PeersData.Remove(address);
+	        return 0;
         }
 
         public void Start(int seed)

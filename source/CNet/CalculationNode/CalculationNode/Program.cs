@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using CalculationNode.Extentions;
 using CalculationNode.RicartAgrawala;
 
@@ -6,6 +7,7 @@ namespace CalculationNode
 {
     class Program
     {
+	    private static RicartAgrawalaClient ricartAgrawalaClient;
         static void Main(string[] args)
         {
             // Prepare params
@@ -23,13 +25,43 @@ namespace CalculationNode
 			// Build server URL address
 	        var baseAddress = NetworkExtentions.BuildServerUri(localIP.ToString(), localPort, Constants.DefaultRelativePath);
 
-	        var ricardClient = new RicartAgrawalaClient(baseAddress);
-			ricardClient.Join(fellowAddress);
+			ricartAgrawalaClient = new RicartAgrawalaClient(baseAddress);
+			ricartAgrawalaClient.Join(fellowAddress);
 
-			// TODO: Implement infinite loop for user interractions
-			// TODO: Implement EventGenerator to be start on user request
+	        RunInputLoop();
 
-	        Console.ReadLine();
+	        Console.WriteLine("Aplication terminatesion 1 second");
+			Thread.Sleep(1000);
         }
+
+	    private static void RunInputLoop()
+	    {
+			Console.WriteLine("\nPress key to indicate desired operation:");
+			Console.WriteLine("Enter - start command");
+			Console.WriteLine("J - join command");
+			Console.WriteLine("S - Sign off command");
+			Console.WriteLine("Esc - exit");
+		    while (true)
+		    {
+				switch (Console.ReadKey().Key)
+				{
+					case ConsoleKey.Enter:
+						ricartAgrawalaClient.Start(5);
+						break;
+					case ConsoleKey.S:
+						ricartAgrawalaClient.SingOff();
+						break;
+					case ConsoleKey.J:
+						Console.WriteLine("Enter url to join:");
+						ricartAgrawalaClient.Join(new Uri(Console.ReadLine()));
+						break;
+					case ConsoleKey.Escape:
+						return;
+					default:
+						Console.WriteLine("Unknown command");
+						break;
+				}    
+		    }
+	    }
     }
 }

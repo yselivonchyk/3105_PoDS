@@ -6,6 +6,10 @@ using Microsoft.Samples.XmlRpc;
 
 namespace CalculationNode
 {
+	/// <summary>
+	/// Class caries data about fellow nodes that should be shared between all threads.
+	/// Also contains method for managing list of peers
+	/// </summary>
 	public static class PeersData
 	{
 		public static Dictionary<String, ChannelFactory<IRicartAgrawalaServer>> Fellows = 
@@ -24,6 +28,22 @@ namespace CalculationNode
 			}
 		}
 
+		public static void Remove(string address)
+		{
+			if(Fellows.ContainsKey(address))
+				Fellows.Remove(address);
+			else
+			{
+				Console.WriteLine("Warning. Can not remove {0} because it is not in the list", address);
+			}
+		}
+
+		public static void Empty()
+		{
+			Fellows.Clear();
+		}
+
+
 		public static IRicartAgrawalaServer GetChannel(string address)
 		{
 			var fabric = Fellows[address];
@@ -33,6 +53,11 @@ namespace CalculationNode
 		public static string[] GetAll()
 		{
 			return Fellows.Keys.ToArray();
+		}
+
+		public static bool HasAny()
+		{
+			return Fellows.Any();
 		}
 	}
 }

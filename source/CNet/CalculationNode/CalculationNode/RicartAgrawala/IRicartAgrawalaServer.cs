@@ -12,7 +12,7 @@ namespace CalculationNode
         string[] Join (string address);
 
         [OperationContract(Action = "singoff")]
-        string SingOff(string address);
+        int SingOff(string address);
 
         [OperationContract(Action = "start")]
         void Start(int seed);
