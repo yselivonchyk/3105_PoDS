@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace CalculationNode
 {
@@ -14,7 +16,27 @@ namespace CalculationNode
 			BaseServerUri = baseServerUri;
 		}
 
-		public abstract void Join(Uri knownNodeUri);
+		public void Join(Uri knownNodeUri)
+		{
+			// save information about known node
+			var knownNodeAddress = knownNodeUri.ToString();
+			PeersData.Add(knownNodeAddress);
+			// send join request to known node
+			var nodeProxy = PeersData.GetChannel(knownNodeAddress);
+			var allNodesAddresses = nodeProxy.Join(LocalServerAddress);
+			var undiscoveredNodesAddresses = allNodesAddresses.Where(x => !x.Equals(knownNodeAddress));
+
+			Parallel.ForEach(
+				undiscoveredNodesAddresses,
+				siblingAddress =>
+				{
+					PeersData.Add(siblingAddress);
+					var siblingProxy = PeersData.GetChannel(siblingAddress);
+					var joinResponse = siblingProxy.Join(LocalServerAddress);
+					ConsoleExtentions.Log(String.Format("Got response with {0} items", joinResponse.Length));
+					//response.ToList().ForEach(x => Console.WriteLine("{0} - {1}", fellow, x));
+				});
+		}
 
 		public void SingOff(string address)
 		{
