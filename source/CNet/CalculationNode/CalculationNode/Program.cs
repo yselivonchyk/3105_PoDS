@@ -26,7 +26,8 @@ namespace CalculationNode
 	        var ricardClient = new RicartAgrawalaClient(baseAddress);
 			ricardClient.Join(fellowAddress);
 
-			// Implement infinite loop for user interractions
+			// TODO: Implement infinite loop for user interractions
+			// TODO: Implement EventGenerator to be start on user request
 
 	        Console.ReadLine();
         }

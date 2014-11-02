@@ -11,7 +11,7 @@ namespace CalculationNode
 		protected ServiceHost HostObject;
 		protected string LocalServerAddress;
 
-		public ClientBase(Uri baseServerUri)
+		protected ClientBase(Uri baseServerUri)
 		{
 			BaseServerUri = baseServerUri;
 		}
@@ -25,7 +25,7 @@ namespace CalculationNode
 			var nodeProxy = PeersData.GetChannel(knownNodeAddress);
 			var allNodesAddresses = nodeProxy.Join(LocalServerAddress);
 			var undiscoveredNodesAddresses = allNodesAddresses.Where(x => !x.Equals(knownNodeAddress));
-
+			// Make parallel non-blocking call to all other nodes
 			Parallel.ForEach(
 				undiscoveredNodesAddresses,
 				siblingAddress =>
