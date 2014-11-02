@@ -50,6 +50,7 @@
     <Compile Include="CalculatorBase.cs" />
     <Compile Include="ConsoleExtentions.cs" />
     <Compile Include="ICalculator.cs" />
+    <Compile Include="PeersData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TokenRingCalculator.cs" />

@@ -16,9 +16,9 @@ namespace CalculationNode
 
         public string[] Join(string address)
         {
-			ConsoleExtentions.Log("Join request from " + address);
-			Fellows.Add(address);
-			return Fellows.ToArray();
+			ConsoleExtentions.Log("Join: " + address);
+			PeersData.Add(address);
+			return PeersData.GetAll();
         }
 
         public string SingOff(string address)
