@@ -10,14 +10,14 @@ namespace CalculationNode
 {
 	public static class PeersData
 	{
-		public static Dictionary<String, ChannelFactory<ICalculator>> Fellows = 
-			new Dictionary<String, ChannelFactory<ICalculator>>();
+		public static Dictionary<String, ChannelFactory<IRicartAgrawalaServer>> Fellows = 
+			new Dictionary<String, ChannelFactory<IRicartAgrawalaServer>>();
 
 		public static void Add(string address)
 		{
 			if (!Fellows.ContainsKey(address))
 			{
-				ChannelFactory<ICalculator> channelFactory = new ChannelFactory<ICalculator>(
+				ChannelFactory<IRicartAgrawalaServer> channelFactory = new ChannelFactory<IRicartAgrawalaServer>(
 					new WebHttpBinding(WebHttpSecurityMode.None), new EndpointAddress(address));
 				channelFactory.Endpoint.Behaviors.Add(new XmlRpcEndpointBehavior());
 
@@ -25,7 +25,7 @@ namespace CalculationNode
 			}
 		}
 
-		public static ICalculator GetChannel(string address)
+		public static IRicartAgrawalaServer GetChannel(string address)
 		{
 			var fabric = Fellows[address];
 			return fabric.CreateChannel();

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceModel;
 
 namespace CalculationNode
 {
@@ -11,7 +6,7 @@ namespace CalculationNode
     /// 
     /// </summary>
     [ServiceContract(Namespace = "https://github.com/yselivonchyk/3105_PoDS")]
-    public interface ICalculator
+    public interface IRicartAgrawalaServer
     {
         [OperationContract(Action = "join")]
         string[] Join (string address);

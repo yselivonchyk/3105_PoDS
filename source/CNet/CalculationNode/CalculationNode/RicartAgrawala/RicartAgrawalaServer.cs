@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Samples.XmlRpc;
 
 namespace CalculationNode
 {
     [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
-    public class TokenRingCalculator : ICalculator
+    public class RicartAgrawalaServer : IRicartAgrawalaServer
     {
 		public List<String> Fellows = new List<String>();
         public int CurrentValue { get; protected set; }
