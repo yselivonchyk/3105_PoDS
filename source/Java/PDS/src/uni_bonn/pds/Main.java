@@ -2,21 +2,19 @@ package uni_bonn.pds;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Scanner input = new Scanner(System.in);
-		System.out.println("Choose Version. 0-Client, 1-Server");
-		int choice = input.nextInt();
 
-		String memberIPandPort = "212.201.72.198:1111";
+		int algorithmType = 0; // 0-TokenRing 1-R&A
+		String memberIPandPort = "localhost:2222";
 
-		if (choice != 0)
-			new Server().launch();
-		else
-			new Client().start(memberIPandPort);
+		Server server = new Server();
+//		Client client = new Client();
+
+		server.launch();
+		// client.launch(memberIPandPort);
 
 		try {
 			System.out.println("Your IP:" + InetAddress.getLocalHost()
@@ -26,5 +24,4 @@ public class Main {
 		}
 
 	}
-
 }
