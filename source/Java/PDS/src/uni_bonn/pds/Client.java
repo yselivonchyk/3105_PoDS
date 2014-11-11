@@ -59,7 +59,7 @@ public class Client {
 
 			Thread.sleep(2000);
 
-			// signoff();
+			signoff();
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -69,16 +69,19 @@ public class Client {
 			// } catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (XmlRpcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		/**********************************************************************/
 	}
 
 	public void join(String memberIPandPort) throws MalformedURLException {
 
-		// System.out.println("Setting URL...");
+		System.out.println("Setting URL...");
 		config.setServerURL(new URL("http://" + memberIPandPort));
 
-		// System.out.println("Setting configuration...");
+		System.out.println("Setting configuration...");
 		xmlRpcClient.setConfig(config);
 
 		params.removeAllElements();
@@ -88,26 +91,18 @@ public class Client {
 					params);
 			for (Object obj : result) {
 				String temp = (String) obj;
-				Server.machinesIPs.add(temp);
-				serverURLs.add(new URL("http://" + temp));
+				if (Server.machinesIPs.add(temp))
+					serverURLs.add(new URL("http://" + temp));
 			}
 
 			System.out.println("Successfully connected!\nData received");
-			// System.out.println(Server.otherMachines);
 
-			/* Letting other machines about joining */
-			/* serverURLS[0] is current computer */
-			// serverURLs[1] is computer we connect. There is no need to let him
-			// know!
-			for (int i = 2; i < serverURLs.size(); i++) {
+			/* Letting other nodes know */
+			for (int i = 0; i < serverURLs.size(); i++) {
 				config.setServerURL(serverURLs.get(i));
 				xmlRpcClient.setConfig(config);
-				xmlRpcClient.execute("Server.addNewMember", params);
+				xmlRpcClient.execute("Server.join", params);
 			}
-
-			/* Adding the machine we connected for data */
-			serverURLs.add(0, new URL("http://" + memberIPandPort));
-			Server.machinesIPs.add(memberIPandPort);
 
 		} catch (XmlRpcException e) {
 			System.err.println(e.getMessage());
@@ -118,12 +113,14 @@ public class Client {
 	public void signoff() throws XmlRpcException {
 
 		/* Telling all machines about leaving */
-		if (!serverURLs.isEmpty()) {
+		if (serverURLs.size() > 1) {
 			System.out.println("Signing off...");
 			for (URL url : serverURLs) {
 				config.setServerURL(url);
 				xmlRpcClient.setConfig(config);
-				xmlRpcClient.execute("Server.signOff", params);
+				if (!(boolean) xmlRpcClient.execute("Server.signOff", params)) {
+					System.out.println("Failed to signOff from " + params);
+				}
 			}
 			System.out.println("Signed off!");
 		}

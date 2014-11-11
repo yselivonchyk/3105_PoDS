@@ -3,8 +3,7 @@ package uni_bonn.pds;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
@@ -18,17 +17,19 @@ import TokenRing.TokenRing;
 public class Server {
 
 	// Holds IP and corresponding of system members
-	public static ArrayList<String> machinesIPs = new ArrayList<String>();
-	public static final int PORT = 1111; // Use only ports higher than 1000
-
+	
+	public static final int PORT = 2222; // Use only ports higher than 1000
+	public static HashSet<String> machinesIPs = new HashSet<String>();
+	
 	/* Creates WebServer and starts it */
 	public void launch() {
 
 		// Putting this machine on the list
 		try {
 			machinesIPs.add(Client.currentMachineInfo);
-			Client.serverURLs.add(new URL("http://" + Client.currentMachineInfo));
-			
+			Client.serverURLs
+					.add(new URL("http://" + Client.currentMachineInfo));
+
 		} catch (MalformedURLException e1) {
 			System.err.println(e1.getMessage());
 		}
@@ -71,31 +72,15 @@ public class Server {
 	/* Server functions */
 
 	/* Joins to network via network member Ip and Port */
-	public List<String> join(String newMemberIPandPort) throws MalformedURLException {
-		System.out.println("Client is connecting...");
+	public Object[] join(String newMemberIPandPort)
+			throws MalformedURLException {
 
-		// Making copy of IPlist
-		List<String> tmp = (List) machinesIPs.clone();
-
-		machinesIPs.add(newMemberIPandPort); // adding new member to the list
-		Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
-
-		System.out.println("IP:Port=" + newMemberIPandPort);
-		return tmp;
-
-	}
-
-	/* Adds newly connected machines */
-	public boolean addNewMember(String newMemberInfo) {
-		try {
-
-			machinesIPs.add(newMemberInfo);
-			Client.serverURLs.add(new URL("http://" + newMemberInfo));
-			System.out.println("Client connected! " + newMemberInfo);
-		} catch (MalformedURLException e) {
-			System.out.println("Error during adding new member!");
+		if (machinesIPs.add(newMemberIPandPort)) {
+			Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
+			System.out.println("Client is connected!");
+			System.out.println("IP:Port=" + newMemberIPandPort);
 		}
-		return true;
+		return machinesIPs.toArray();
 
 	}
 
@@ -115,14 +100,12 @@ public class Server {
 	/* Leave the network! */
 	public boolean signOff(String leavingMachine) {
 
-		for (String str : machinesIPs) {
+		if (machinesIPs.remove(leavingMachine)) {
+			System.out.println("Machine " + leavingMachine + " left network!");
+			return true;
 
-			if (str.equals(leavingMachine)) {
-				machinesIPs.remove(str);
-				System.out.println(leavingMachine + " has left!");
-				return true;
-			}
 		}
+
 		return false;
 
 	}
