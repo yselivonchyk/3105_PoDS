@@ -18,24 +18,29 @@ namespace CalculationNode
 
 		public void Join(Uri knownNodeUri)
 		{
+			// Add self 
+			Join(LocalServerAddress);
 			// save information about known node
 			var knownNodeAddress = knownNodeUri.ToString();
-			PeersData.Add(knownNodeAddress);
-			// send join request to known node
-			var nodeProxy = PeersData.GetChannel(knownNodeAddress);
-			var allNodesAddresses = nodeProxy.Join(LocalServerAddress);
-			var undiscoveredNodesAddresses = allNodesAddresses.Where(x => !x.Equals(knownNodeAddress));
+			var peers = Join(knownNodeAddress);
+			var undiscoveredNodesAddresses = peers
+				.Where(x => !x.Equals(knownNodeAddress) && !x.Equals(LocalServerAddress));
 			// Make parallel non-blocking call to all other nodes
 			Parallel.ForEach(
 				undiscoveredNodesAddresses,
-				siblingAddress =>
-				{
-					PeersData.Add(siblingAddress);
-					var siblingProxy = PeersData.GetChannel(siblingAddress);
-					var joinResponse = siblingProxy.Join(LocalServerAddress);
-					ConsoleExtentions.Log(String.Format("Got response with {0} items", joinResponse.Length));
-					//response.ToList().ForEach(x => Console.WriteLine("{0} - {1}", fellow, x));
-				});
+				siblingAddress => Join(siblingAddress));
+		}
+
+		// Get a connetion and call remote join operation on a single node
+		private string[] Join(string nodeAddress)
+		{
+			PeersData.Add(nodeAddress);
+			var siblingProxy = PeersData.GetChannel(nodeAddress);
+			var joinResponse = siblingProxy.Join(LocalServerAddress);
+			ConsoleExtentions.Log(String.Format("Got response with {0} items from {1}", 
+				joinResponse.Length,
+				nodeAddress));
+			return joinResponse;
 		}
 
 		public void SingOff()

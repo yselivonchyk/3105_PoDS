@@ -12,24 +12,21 @@ namespace CalculationNode
         string[] Join (string address);
 
         [OperationContract(Action = "singoff")]
-        int SingOff(string address);
+		bool SingOff(string address);
 
         [OperationContract(Action = "start")]
-        void Start(int seed);
+        bool Start(int seed);
 
         [OperationContract(Action = "sum")]
-        void Sum(int param);
+		bool Sum(int param);
 
         [OperationContract(Action = "substract")]
-        void Substract(int param);
+		bool Substract(int param);
 
         [OperationContract(Action = "divide")]
-        void Divide(int param);
+		bool Divide(int param);
 
         [OperationContract(Action = "multiply")]
-        void Multiply(int param);
-
-		[OperationContract(Action = "echo")]
-		string Echo(string param);
+		bool Multiply(int param);
     }
 }

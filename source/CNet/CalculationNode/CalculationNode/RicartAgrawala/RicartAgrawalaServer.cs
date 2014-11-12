@@ -17,41 +17,41 @@ namespace CalculationNode
 			return PeersData.GetAll();
         }
 
-        public int SingOff(string address)
+        public bool SingOff(string address)
         {
 			ConsoleExtentions.Log(String.Format("Sign off request from {0}", address));
             PeersData.Remove(address);
-	        return 0;
+			return true;
         }
 
-        public void Start(int seed)
+		public bool Start(int seed)
         {
             CurrentValue = seed;
+			return true;
         }
 
-        public virtual void Sum(int param)
+		public virtual bool Sum(int param)
         {
             CurrentValue += param;
+			return true;
         }
 
-        public virtual void Substract(int param)
+		public virtual bool Substract(int param)
         {
             CurrentValue -= param;
+			return true;
         }
 
-        public virtual void Divide(int param)
+		public virtual bool Divide(int param)
         {
             CurrentValue /= param;
+			return true;
         }
 
-        public virtual void Multiply(int param)
+		public virtual bool Multiply(int param)
         {
             CurrentValue *= param;
+			return true;
         }
-
-		public virtual string Echo(string param)
-		{
-			return param;
-		}
     }
 }
