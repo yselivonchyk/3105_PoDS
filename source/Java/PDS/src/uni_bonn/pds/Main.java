@@ -3,18 +3,36 @@ package uni_bonn.pds;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import RicardAndAgrawala.RAClient;
+import RicardAndAgrawala.RAServer;
+import TokenRing.TokenRingClient;
+import TokenRing.TokenRingServer;
+
 public class Main {
+
+	public static boolean startedCalculations =true;
+	public static boolean standalone = false;
+	public static int algorithmType; // 0-TokenRing 1-R&A
 
 	public static void main(String[] args) {
 
-		int algorithmType = 0; // 0-TokenRing 1-R&A
-		String memberIPandPort = "localhost:1111";
-
-		Server server = new Server();
-		Client client = new Client();
-
-		server.launch();
-		client.launch(memberIPandPort);
+		String memberIPandPort = "localhost:2222";
+		algorithmType = 0;
+		
+		
+		if (algorithmType == 0)
+		{        
+			new RAServer().launch();
+			if(!standalone) new RAClient().join(memberIPandPort);
+		}
+		else {
+			
+			new TokenRingServer().launch();
+			if(!standalone) new TokenRingClient().join(memberIPandPort);
+		}
+		
+		
+		
 
 		try {
 			System.out.println("Your IP:" + InetAddress.getLocalHost()

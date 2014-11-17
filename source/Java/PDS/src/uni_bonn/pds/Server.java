@@ -11,20 +11,23 @@ import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 import org.apache.xmlrpc.webserver.WebServer;
 
-import RicardAndAgrawala.RA;
+
+
+
+import RicardAndAgrawala.RAServer;
 import TokenRing.TokenRing;
+import TokenRing.TokenRingServer;
 
 public class Server {
 
 	// Holds IP and corresponding of system members
-	
-	public static final int PORT = 2222; // Use only ports higher than 1000
+
+	public static int PORT = 6666; // Use only ports higher than 1000
 	public static HashSet<String> machinesIPs = new HashSet<String>();
-	
+
 	/* Creates WebServer and starts it */
 	public void launch() {
-
-		// Putting this machine on the list
+		/* Putting current machine on the list */
 		try {
 			machinesIPs.add(Client.currentMachineInfo);
 			Client.serverURLs
@@ -46,9 +49,8 @@ public class Server {
 		// System.out.println("Adding handlers...");
 		try {
 			phm.addHandler("Server", Server.class);
-			phm.addHandler("Calculator", Calculator.class);
-			phm.addHandler("TokenRing", TokenRing.class);
-			phm.addHandler("RicardAndAgrawala", RA.class);
+			phm.addHandler("TokenRing", TokenRingServer.class);
+			phm.addHandler("RicardAndAgrawala", RAServer.class);
 		} catch (XmlRpcException e) {
 			System.err.println(e.getMessage());
 		}
@@ -64,12 +66,10 @@ public class Server {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-
 		System.out.println("Server started successfully.");
-		// System.out.println("Accepting requests. (Halt program to stop.)");
 	}
 
-	/* Server functions */
+	/******************************************** Server functions ***************************************************************/
 
 	/* Joins to network via network member Ip and Port */
 	public Object[] join(String newMemberIPandPort)
@@ -81,20 +81,17 @@ public class Server {
 			System.out.println("IP:Port=" + newMemberIPandPort);
 		}
 		return machinesIPs.toArray();
-
 	}
 
 	/* Receive initial value and start algorithm */
-	public void start(int initValue, int algorithmType) {
+	public boolean start(int initValue) {
 		Calculator.processingValue = initValue;
-
-		if (algorithmType == 0) {
+		if (Main.algorithmType == 0) {
 			System.out.println("Starting TokenRing algorithm...");
-			// new Thread(new TokenRing()).run();
 		} else {
 			System.out.println("Starting Ricard & Agrawala algorithm...");
-			// new Thread(new RA()).run();
 		}
+		return true;
 	}
 
 	/* Leave the network! */
@@ -105,7 +102,6 @@ public class Server {
 			return true;
 
 		}
-
 		return false;
 
 	}

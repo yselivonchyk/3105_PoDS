@@ -9,14 +9,14 @@ public class RandomOperation {
 	int maximalNaturalNumber;
 	Vector<Integer> value = new Vector<Integer>();
 	String calculatorClass;
-	int valueLimit = 10;;
+	int valueLimit = 10;
 
 	public RandomOperation() {
 		calculatorClass="Calculator";
 		value.add(0);
 	}
 
-	public Vector nextValue() {
+	public Vector<Integer> nextValue() {
 		value.set(0, random.nextInt(valueLimit) + 1);
 		return value;
 	}

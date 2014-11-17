@@ -16,7 +16,7 @@ import uni_bonn.pds.RandomOperation;
 public class TokenRing implements Runnable {
 	
 	static Vector vector = new Vector();
-	RandomOperation ranOp;
+	RandomOperation randOp;
 	
 	static Client client = new Client();
 	static XmlRpcClient xmlRpcClient = client.xmlRpcClient;
@@ -34,7 +34,7 @@ public class TokenRing implements Runnable {
 			tokenRingExistance = true;
 			haveToken = token;
 			wantToken = false;
-		ranOp = new RandomOperation();
+		randOp = new RandomOperation();
 		}
 	}
 
@@ -116,7 +116,7 @@ public class TokenRing implements Runnable {
 		while (tokenRingExistance) {
 			if (haveToken) {
 				if (wantToken) {
-					client.executeForAll( ranOp.nextOperation(), ranOp.nextValue());
+					client.executeForAll( randOp.nextOperation(), randOp.nextValue());
 					wantToken = false;
 					sendToken();
 				} else
