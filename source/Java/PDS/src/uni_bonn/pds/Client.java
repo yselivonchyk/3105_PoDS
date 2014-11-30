@@ -12,15 +12,11 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 public class Client {
+	public enum State {
+		RELEASED, WANTED, HELD
+	};
 
 	private boolean connectedToNetwork;
-
-	public Client() {
-		connectedToNetwork = false;
-		config = new XmlRpcClientConfigImpl();
-		System.out.println("Creating XmlRpcClient...");
-		xmlRpcClient = new XmlRpcClient();
-	}
 
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
@@ -29,6 +25,13 @@ public class Client {
 
 	// URLs of other machines
 	public static ArrayList<URL> serverURLs = new ArrayList<URL>();
+
+	public Client() {
+		connectedToNetwork = false;
+		config = new XmlRpcClientConfigImpl();
+		System.out.println("Creating XmlRpcClient...");
+		xmlRpcClient = new XmlRpcClient();
+	}
 
 	public static String machineIP() {
 		try {
@@ -97,16 +100,18 @@ public class Client {
 	}
 
 	public void start(int initValue) {
-		params.removeAllElements();
-		params.add(initValue);
-		executeForAll("Server.start", params);
+		Vector<Object> initialValue = new Vector<Object>();
+		initialValue.add(initValue);
+		executeForAll("Server.start", initialValue);
 	}
 
 	public void executeForAll(String methodName, Vector params) {
 
 		for (URL url : serverURLs) {
+			xmlRpcClient.setConfig(null);
 			config.setServerURL(url);
 			xmlRpcClient.setConfig(config);
+			System.out.println("Executing for: " + url.getAuthority());
 			try {
 				xmlRpcClient.execute(methodName, params);
 			} catch (XmlRpcException e) {

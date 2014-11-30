@@ -5,40 +5,31 @@ import java.util.Vector;
 
 public class RandomOperation {
 
-	Random random = new Random();
-	int maximalNaturalNumber;
-	Vector<Integer> value = new Vector<Integer>();
-	String calculatorClass;
+	int waitingTimeLimit = 4000;
+	int minimalWaitingTime = 200;
 	int valueLimit = 10;
+	Vector<String> operationAndValue = new Vector<String>();
 
-	public RandomOperation() {
-		calculatorClass="Calculator";
-		value.add(0);
-	}
+	Random random = new Random();
+	String[] operations = { "sum", "sub", "div", "mul" };
 
-	public Vector<Integer> nextValue() {
-		value.set(0, random.nextInt(valueLimit) + 1);
-		return value;
+	public int nextValue() {
+		return (random.nextInt(valueLimit) + 1);
 	}
 
 	public String nextOperation() {
-
-		String operation = calculatorClass;
-
-		switch (random.nextInt(4)) {
-		case 0:
-			operation += ".sum";
-			break;
-		case 1:
-			operation += ".sub";
-			break;
-		case 2:
-			operation += ".div";
-			break;
-		case 3:
-			operation += ".mul";
-			break;
-		}
-		return operation;
+		return operations[random.nextInt(4)];
 	}
+
+	public long getRandomWaitingTime() {
+		return (random.nextInt(waitingTimeLimit - minimalWaitingTime) + minimalWaitingTime);
+	}
+
+	public Vector<String> nextOperationAndValue() {
+		operationAndValue.removeAllElements();
+		operationAndValue.add(this.nextOperation());
+		operationAndValue.add(Integer.toString(this.nextValue()));
+		return operationAndValue;
+	}
+
 }

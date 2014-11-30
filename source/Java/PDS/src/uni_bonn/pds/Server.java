@@ -6,23 +6,19 @@ import java.net.URL;
 import java.util.*;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.server.PropertyHandlerMapping;
-import org.apache.xmlrpc.server.XmlRpcServer;
-import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 import org.apache.xmlrpc.webserver.WebServer;
+import org.apache.xmlrpc.server.*;
 
-
-
-
+import RicardAndAgrawala.RAClient;
 import RicardAndAgrawala.RAServer;
-import TokenRing.TokenRing;
 import TokenRing.TokenRingServer;
 
 public class Server {
 
+	public static long processingValue = 0;
 	// Holds IP and corresponding of system members
 
-	public static int PORT = 6666; // Use only ports higher than 1000
+	public static int PORT = 5555; // Use only ports higher than 1000
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -48,9 +44,11 @@ public class Server {
 
 		// System.out.println("Adding handlers...");
 		try {
-			phm.addHandler("Server", Server.class);
-			phm.addHandler("TokenRing", TokenRingServer.class);
-			phm.addHandler("RicardAndAgrawala", RAServer.class);
+			if (Main.algorithmType == 0)
+				phm.addHandler("Server", TokenRingServer.class);
+			else
+				phm.addHandler("Server", RAServer.class);
+
 		} catch (XmlRpcException e) {
 			System.err.println(e.getMessage());
 		}
@@ -72,24 +70,30 @@ public class Server {
 	/******************************************** Server functions ***************************************************************/
 
 	/* Joins to network via network member Ip and Port */
-	public Object[] join(String newMemberIPandPort)
-			throws MalformedURLException {
-
-		if (machinesIPs.add(newMemberIPandPort)) {
-			Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
-			System.out.println("Client is connected!");
-			System.out.println("IP:Port=" + newMemberIPandPort);
+	public Object[] join(String newMemberIPandPort) {
+		try {
+			if (machinesIPs.add(newMemberIPandPort)) {
+				Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
+				System.out.println("Client is connected!");
+				System.out.println("IP:Port=" + newMemberIPandPort);
+			}
+		} catch (MalformedURLException e) {
+			System.err.println("Wrong new member IP and port!");
+			System.err.println(e.getMessage());
 		}
 		return machinesIPs.toArray();
 	}
 
 	/* Receive initial value and start algorithm */
 	public boolean start(int initValue) {
-		Calculator.processingValue = initValue;
+		System.out.println("Start calculations!");
+		processingValue = initValue;
 		if (Main.algorithmType == 0) {
 			System.out.println("Starting TokenRing algorithm...");
+			// new TokenRingClient().run();
 		} else {
 			System.out.println("Starting Ricard & Agrawala algorithm...");
+			new Thread(new RAClient()).start();
 		}
 		return true;
 	}
