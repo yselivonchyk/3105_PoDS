@@ -26,9 +26,10 @@ public class Main {
 		System.setProperty("https.proxyHost", "127.0.0.1");
 		System.setProperty("http.proxyPort", "8888");
 		System.setProperty("https.proxyPort", "8888");
+
 		// ========================================================================
 
-		String memberIPandPort = "localhost:9999";
+		String memberIPandPort = "localhost:3333";
 		algorithmType = 1;
 
 		if (algorithmType != 0) {
@@ -37,7 +38,7 @@ public class Main {
 			if (!standalone) {
 				RAC.join(memberIPandPort);
 				Thread.sleep(2000);
-				RAC.start(5);
+				//RAC.start(5);
 				// RAC.signoff();
 			}
 		} else {
@@ -46,7 +47,6 @@ public class Main {
 			if (!standalone)
 				new TokenRingClient().join(memberIPandPort);
 		}
-
 		try {
 			System.out.println("Your IP:" + InetAddress.getLocalHost()
 					+ "  Port: " + Server.PORT);

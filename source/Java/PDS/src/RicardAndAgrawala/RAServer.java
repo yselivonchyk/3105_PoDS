@@ -23,8 +23,8 @@ public class RAServer extends Server {
 	}
 
 	@Override
-	public Object[] join(String newMemberIPandPort) {
-		Object[] temp = super.join(newMemberIPandPort);
+	public String[] join(String newMemberIPandPort) {
+		String[] temp = super.join(newMemberIPandPort);
 		LCE.machineID = temp.length;
 		return temp;
 	}
@@ -36,6 +36,7 @@ public class RAServer extends Server {
 				|| ((RAClient.state == State.WANTED) && RAClient.request
 						.getTimestampAndID().compareTo(TimeStamp + ID) == 1)) {
 			queue.put(TimeStamp + ID, IPandPort);
+			System.err.println(queue.toString());
 		} else {
 			sendOK(IPandPort);
 		}

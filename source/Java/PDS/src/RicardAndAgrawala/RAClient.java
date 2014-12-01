@@ -4,7 +4,6 @@ import uni_bonn.pds.Client;
 import uni_bonn.pds.RandomOperation;
 
 public class RAClient extends Client implements Runnable {
-	
 
 	public static Request request;
 	public static State state;
@@ -17,22 +16,22 @@ public class RAClient extends Client implements Runnable {
 		randomOperation = new RandomOperation();
 	}
 
-
 	public void enterSection() throws InterruptedException {
-	System.out.println("Entering critical area!");
+		System.out.println("Entering critical area!");
 
 		RAServer.numberOfReplies = 0;
 		state = State.WANTED;
 		request.modify(logClock.getCurrentTimeStamp());
 		this.executeForAll("Server.receiveRequest", request.getParams());
-	
-		//Waiting OKs from others
+
+		// Waiting OKs from others
 		while (RAServer.numberOfReplies < (serverURLs.size() - 1)) {
 			Thread.sleep(200);
 		}
 		state = State.HELD;
-		/**   Do calculations on all machines  */
-		this.executeForAll("Server.doCalculation", randomOperation.nextOperationAndValue());
+		/** Do calculations on all machines */
+		this.executeForAll("Server.doCalculation",
+				randomOperation.nextOperationAndValue());
 
 	}
 
@@ -45,7 +44,6 @@ public class RAClient extends Client implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println("Hello!");
 			Thread.sleep(randomOperation.getRandomWaitingTime());
 			enterSection();
 			exitSection();

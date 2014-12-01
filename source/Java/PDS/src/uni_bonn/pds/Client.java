@@ -111,7 +111,7 @@ public class Client {
 			xmlRpcClient.setConfig(null);
 			config.setServerURL(url);
 			xmlRpcClient.setConfig(config);
-			System.out.println("Executing for: " + url.getAuthority());
+			// System.out.println("Executing for: " + url.getAuthority());
 			try {
 				xmlRpcClient.execute(methodName, params);
 			} catch (XmlRpcException e) {

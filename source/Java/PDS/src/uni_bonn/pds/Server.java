@@ -11,6 +11,7 @@ import org.apache.xmlrpc.server.*;
 
 import RicardAndAgrawala.RAClient;
 import RicardAndAgrawala.RAServer;
+import TokenRing.TokenRingClient;
 import TokenRing.TokenRingServer;
 
 public class Server {
@@ -18,7 +19,7 @@ public class Server {
 	public static long processingValue = 0;
 	// Holds IP and corresponding of system members
 
-	public static int PORT = 5555; // Use only ports higher than 1000
+	public static int PORT = 7777; // Use only ports higher than 1000
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -70,7 +71,7 @@ public class Server {
 	/******************************************** Server functions ***************************************************************/
 
 	/* Joins to network via network member Ip and Port */
-	public Object[] join(String newMemberIPandPort) {
+	public String[] join(String newMemberIPandPort) {
 		try {
 			if (machinesIPs.add(newMemberIPandPort)) {
 				Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
@@ -81,7 +82,9 @@ public class Server {
 			System.err.println("Wrong new member IP and port!");
 			System.err.println(e.getMessage());
 		}
-		return machinesIPs.toArray();
+		String[] ips = new String[machinesIPs.size()];
+		machinesIPs.toArray(ips);
+		return ips;
 	}
 
 	/* Receive initial value and start algorithm */
@@ -90,7 +93,7 @@ public class Server {
 		processingValue = initValue;
 		if (Main.algorithmType == 0) {
 			System.out.println("Starting TokenRing algorithm...");
-			// new TokenRingClient().run();
+			new Thread(new TokenRingClient()).start();
 		} else {
 			System.out.println("Starting Ricard & Agrawala algorithm...");
 			new Thread(new RAClient()).start();

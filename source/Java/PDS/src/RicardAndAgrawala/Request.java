@@ -8,10 +8,9 @@ public class Request {
 	private Vector<String> params = new Vector<String>(3);
 
 	public Request() {
-		for (int i = 0; i < 3; i++)
-			params.add("");
-		params.set(0, RAClient.currentMachineInfo);
-		params.set(2, Integer.toString(LCE.machineID));
+		params.add(0, RAClient.currentMachineInfo);
+		params.add("");
+		params.add(2, Integer.toString(LCE.machineID));
 	}
 
 	public Vector<String> getParams() {
