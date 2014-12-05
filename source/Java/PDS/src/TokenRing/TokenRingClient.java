@@ -13,11 +13,11 @@ import uni_bonn.pds.RandomOperation;
 
 public class TokenRingClient extends Client implements Runnable {
 	public static URL nextHost;
-	Vector<Object> emptyParams = new Vector<>();
+	static Vector<Object> emptyParams = new Vector<>();
 	public static State state;
 	RandomOperation randomOperation;
 
-	private static URL findNextHost() {
+	static URL findNextHost() {
 		URL currentMachineURL;
 		try {
 			currentMachineURL = new URL("http://"
@@ -41,21 +41,22 @@ public class TokenRingClient extends Client implements Runnable {
 	}
 
 	public TokenRingClient() {
-		config.setServerURL(nextHost);
-		xmlRpcClient.setConfig(config);
+		System.err.println("TokenRingClient constructor");
+		state = State.HELD;
+		/**********************************************************************************/
+		// config.setServerURL(nextHost);
+		// xmlRpcClient.setConfig(config);
 		randomOperation = new RandomOperation();
 	}
 
-	public void start(int initValue) {
-		nextHost = findNextHost();
-		super.start(initValue);
-	}
-
 	public void enterSection() {
-		state = State.WANTED;
+		System.out.println("Entering critical area!");
+		if (state != State.HELD)
+			state = State.WANTED;
 	}
 
 	public void exitSection() {
+		System.out.println("Exiting critical area!");
 		state = State.RELEASED;
 		sendToken();
 	}
@@ -77,10 +78,13 @@ public class TokenRingClient extends Client implements Runnable {
 		exitSection();
 	}
 
-	public void sendToken() {
+	public static void sendToken() {
 		try {
-			xmlRpcClient.execute("Server.receiveToken", emptyParams);
 			state = State.RELEASED;
+			System.err.println("Sending token to " + nextHost);
+			config.setServerURL(nextHost);
+			xmlRpcClient.execute("Server.receiveToken", emptyParams);
+			// System.err.println("Token is sent to: "+config.getServerURL());
 		} catch (XmlRpcException e) {
 			System.err.println("Error while sending token!");
 			e.printStackTrace();

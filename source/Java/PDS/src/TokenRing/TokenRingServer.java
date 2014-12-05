@@ -1,37 +1,25 @@
 package TokenRing;
 
 import uni_bonn.pds.Client.State;
-import uni_bonn.pds.Log;
 import uni_bonn.pds.Server;
 
 public class TokenRingServer extends Server {
 
-	public boolean receiveToken() {
-		TokenRingClient.state = State.HELD;
-		return true;
+	private boolean tokenRingExists = true;
+
+	@Override
+	public boolean start(int initValue) {
+		TokenRingClient.nextHost = TokenRingClient.findNextHost();
+		System.err.println("NextHost: " + TokenRingClient.nextHost);
+		return super.start(initValue);
 	}
 
-	public boolean doCalculation(String operation, String value) {
-		int intValue = Integer.parseInt(value);
-		switch (operation) {
-		case "sum":
-			processingValue += intValue;
-			break;
-		case "div":
-			processingValue /= intValue;
-			break;
-		case "sub":
-			processingValue -= intValue;
-			break;
-		case "mul":
-			processingValue *= intValue;
-			break;
-		default:
-			System.err.println("Unknown operation in doCalculation!");
-			return false;
-		}
-		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value);
+	public boolean receiveToken() {
+		System.out.println("Token received!");
+		if ((TokenRingClient.state == State.RELEASED)&&(tokenRingExists)) {
+			TokenRingClient.sendToken();
+		} else
+			TokenRingClient.state = State.HELD;
 		return true;
 	}
 

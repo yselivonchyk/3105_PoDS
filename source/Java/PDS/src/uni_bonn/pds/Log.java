@@ -14,7 +14,7 @@ public class Log {
 		try {
 
 			// This block configure the logger with handler and formatter
-			fh = new FileHandler("MyLogFile.log",false);
+			fh = new FileHandler("MyLogFile.log",false); 
 			
 			logger.addHandler(fh);
 			SimpleFormatter formatter = new SimpleFormatter();

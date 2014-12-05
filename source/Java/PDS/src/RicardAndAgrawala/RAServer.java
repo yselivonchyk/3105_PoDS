@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import uni_bonn.pds.Client;
 import uni_bonn.pds.Client.State;
-import uni_bonn.pds.Log;
 import uni_bonn.pds.Server;
 
 public class RAServer extends Server {
@@ -41,34 +40,15 @@ public class RAServer extends Server {
 	public boolean receiveOK() {
 		numberOfReplies += 1;
 		System.out.println("Ok received! " + numberOfReplies + " out of "
-				+ this.machinesIPs.size());
+				+ Server.machinesIPs.size());
 		// System.err.println("receiveOK " + queue.toString());
 		return true;
 	}
 
+	@Override
 	public boolean doCalculation(String operation, String value) {
-		this.logClock.increase();
-		int intValue = Integer.parseInt(value);
-		switch (operation) {
-		case "sum":
-			processingValue += intValue;
-			break;
-		case "div":
-			processingValue /= intValue;
-			break;
-		case "sub":
-			processingValue -= intValue;
-			break;
-		case "mul":
-			processingValue *= intValue;
-			break;
-		default:
-			System.err.println("Unknown operation in doCalculation!");
-			return false;
-		}
-		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value);
-		return true;
+		RAServer.logClock.increase();
+		return super.doCalculation(operation, value);
 	}
 
 	public static void sendOK() {
@@ -76,9 +56,9 @@ public class RAServer extends Server {
 		try {
 			while (queue.size() > 0) {
 				String key = queue.firstKey();
-				client.config.setServerURL(new URL("http://" + queue.get(key)));
-				client.xmlRpcClient.setConfig(client.config);
-				client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
+				Client.config.setServerURL(new URL("http://" + queue.get(key)));
+				Client.xmlRpcClient.setConfig(Client.config);
+				Client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
 				queue.remove(key);
 			}
 		} catch (Exception e) {
@@ -89,13 +69,13 @@ public class RAServer extends Server {
 	}
 
 	public void sendOK(String IPandPort) {
-		this.logClock.increase();
+		RAServer.logClock.increase();
 		// System.err.println("sendOK " + queue.toString());
 		try {
 			System.out.println("Sending OK!");
-			client.config.setServerURL(new URL("http://" + IPandPort));
-			client.xmlRpcClient.setConfig(client.config);
-			client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
+			Client.config.setServerURL(new URL("http://" + IPandPort));
+			Client.xmlRpcClient.setConfig(Client.config);
+			Client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();

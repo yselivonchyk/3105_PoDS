@@ -16,18 +16,15 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	private boolean connectedToNetwork;
-
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
-	public XmlRpcClient xmlRpcClient;
-	public XmlRpcClientConfigImpl config;
+	public static XmlRpcClient xmlRpcClient;
+	public static XmlRpcClientConfigImpl config;
 
 	// URLs of other machines
 	public static ArrayList<URL> serverURLs = new ArrayList<URL>();
 
 	public Client() {
-		connectedToNetwork = false;
 		config = new XmlRpcClientConfigImpl();
 		System.out.println("Creating XmlRpcClient...");
 		xmlRpcClient = new XmlRpcClient();
@@ -75,7 +72,6 @@ public class Client {
 		} catch (MalformedURLException e1) {
 			System.err.println("Wrong remote machine address!!!");
 		}
-		connectedToNetwork = true;
 	}
 
 	public void signoff() throws XmlRpcException {
@@ -96,7 +92,6 @@ public class Client {
 		else {
 			System.out.println("You are not connected to network!");
 		}
-		connectedToNetwork = false;
 	}
 
 	public void start(int initValue) {
@@ -120,8 +115,4 @@ public class Client {
 		}
 	}
 
-	public boolean isConnected() {
-		return connectedToNetwork;
-
-	}
 }

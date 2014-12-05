@@ -17,9 +17,7 @@ import TokenRing.TokenRingServer;
 public class Server {
 
 	public static long processingValue = 0;
-	// Holds IP and corresponding of system members
-
-	public static int PORT = 3333; // Use only ports higher than 1000
+	public static int PORT = 9999; // Use only ports higher than 1024
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -125,10 +123,31 @@ public class Server {
 		if (machinesIPs.remove(leavingMachine)) {
 			System.out.println("Machine " + leavingMachine + " left network!");
 			return true;
-
 		}
 		return false;
-
 	}
 
+	public boolean doCalculation(String operation, String value) {
+		int intValue = Integer.parseInt(value);
+		switch (operation) {
+		case "sum":
+			processingValue += intValue;
+			break;
+		case "div":
+			processingValue /= intValue;
+			break;
+		case "sub":
+			processingValue -= intValue;
+			break;
+		case "mul":
+			processingValue *= intValue;
+			break;
+		default:
+			System.err.println("Unknown operation in doCalculation!");
+			return false;
+		}
+		Log.logger.info("< " + operation + " >" + " performed with value:"
+				+ value);
+		return true;
+	}
 }
