@@ -19,7 +19,7 @@ public class Server {
 	public static long processingValue = 0;
 	// Holds IP and corresponding of system members
 
-	public static int PORT = 7777; // Use only ports higher than 1000
+	public static int PORT = 3333; // Use only ports higher than 1000
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -71,7 +71,7 @@ public class Server {
 	/******************************************** Server functions ***************************************************************/
 
 	/* Joins to network via network member Ip and Port */
-	public String[] join(String newMemberIPandPort) {
+	public ArrayList<String> join(String newMemberIPandPort) {
 		try {
 			if (machinesIPs.add(newMemberIPandPort)) {
 				Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
@@ -82,10 +82,28 @@ public class Server {
 			System.err.println("Wrong new member IP and port!");
 			System.err.println(e.getMessage());
 		}
-		String[] ips = new String[machinesIPs.size()];
-		machinesIPs.toArray(ips);
+		ArrayList<String> ips = new ArrayList<String>();
+		for (String str : machinesIPs) {
+			ips.add(str);
+		}
+
 		return ips;
 	}
+
+	// /* Joins to network via network member Ip and Port */
+	// public Object[] join(String newMemberIPandPort) {
+	// try {
+	// if (machinesIPs.add(newMemberIPandPort)) {
+	// Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
+	// System.out.println("Client is connected!");
+	// System.out.println("IP:Port=" + newMemberIPandPort);
+	// }
+	// } catch (MalformedURLException e) {
+	// System.err.println("Wrong new member IP and port!");
+	// System.err.println(e.getMessage());
+	// }
+	// return machinesIPs.toArray();
+	// }
 
 	/* Receive initial value and start algorithm */
 	public boolean start(int initValue) {

@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import RicardAndAgrawala.LCE;
 import RicardAndAgrawala.RAClient;
 import RicardAndAgrawala.RAServer;
 import TokenRing.TokenRingClient;
@@ -29,7 +30,7 @@ public class Main {
 
 		// ========================================================================
 
-		String memberIPandPort = "localhost:3333";
+		String memberIPandPort = "localhost:5555";
 		algorithmType = 1;
 
 		if (algorithmType != 0) {
@@ -38,18 +39,17 @@ public class Main {
 			if (!standalone) {
 				RAC.join(memberIPandPort);
 				Thread.sleep(2000);
-				//RAC.start(5);
+			RAC.start(5);
 				// RAC.signoff();
 			}
 		} else {
-
 			new TokenRingServer().launch();
 			if (!standalone)
 				new TokenRingClient().join(memberIPandPort);
 		}
 		try {
 			System.out.println("Your IP:" + InetAddress.getLocalHost()
-					+ "  Port: " + Server.PORT);
+					+ "  Port: " + Server.PORT + "  ID: " + LCE.machineID);
 		} catch (UnknownHostException e) {
 			System.out.println("Error: " + e.getMessage());
 		}

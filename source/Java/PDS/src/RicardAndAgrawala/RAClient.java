@@ -16,6 +16,12 @@ public class RAClient extends Client implements Runnable {
 		randomOperation = new RandomOperation();
 	}
 
+	@Override
+	public void join(String memberIPandPort) {
+		super.join(memberIPandPort);
+		LCE.machineID = this.serverURLs.size();
+	}
+
 	public void enterSection() throws InterruptedException {
 		System.out.println("Entering critical area!");
 
@@ -25,10 +31,13 @@ public class RAClient extends Client implements Runnable {
 		this.executeForAll("Server.receiveRequest", request.getParams());
 
 		// Waiting OKs from others
-		while (RAServer.numberOfReplies < (serverURLs.size() - 1)) {
+		while (RAServer.numberOfReplies < serverURLs.size()) {
 			Thread.sleep(200);
 		}
 		state = State.HELD;
+
+		System.err.println("Access to critical area obtained!");
+		// System.err.println(RAServer.queue.toString());
 		/** Do calculations on all machines */
 		this.executeForAll("Server.doCalculation",
 				randomOperation.nextOperationAndValue());

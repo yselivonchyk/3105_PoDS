@@ -11,43 +11,38 @@ import uni_bonn.pds.Server;
 
 public class RAServer extends Server {
 	static Client client = new Client();
-	public static LCE logClock;
-	public static TreeMap<String, String> queue;
+	public static final LCE logClock = new LCE();
+	private static final TreeMap<String, String> queue = new TreeMap<String, String>();
 	public static int numberOfReplies = 0;
 
 	static Vector<String> emptyParams = new Vector<>();
 
 	public RAServer() { // Why constructor is called so much?
-		logClock = new LCE();
-		queue = new TreeMap<String, String>();
-	}
-
-	@Override
-	public String[] join(String newMemberIPandPort) {
-		String[] temp = super.join(newMemberIPandPort);
-		LCE.machineID = temp.length;
-		return temp;
 	}
 
 	public boolean receiveRequest(String IPandPort, String TimeStamp, String ID) {
 		System.out.println("Request received!");
+		// System.err.println("request " + queue.toString());
 		logClock.adjustClocks(Integer.parseInt(TimeStamp));
 		if ((RAClient.state == State.HELD)
 				|| ((RAClient.state == State.WANTED) && RAClient.request
-						.getTimestampAndID().compareTo(TimeStamp + ID) == 1)) {
+						.getTimestampAndID().compareTo(TimeStamp + ID) == -1)) {
 			queue.put(TimeStamp + ID, IPandPort);
-			System.err.println(queue.toString());
+			System.err.println("Adding request to a queue!");
+			// System.err.println("request " + queue.toString());
 		} else {
 			sendOK(IPandPort);
+			// System.err.println(queue.toString());
 		}
+		// System.err.println("request " + queue.toString());
 		return false;
 	}
 
 	public boolean receiveOK() {
 		numberOfReplies += 1;
-		;
 		System.out.println("Ok received! " + numberOfReplies + " out of "
 				+ this.machinesIPs.size());
+		// System.err.println("receiveOK " + queue.toString());
 		return true;
 	}
 
@@ -79,9 +74,9 @@ public class RAServer extends Server {
 	public static void sendOK() {
 		logClock.increase();
 		try {
-			if (queue.size() > 0) {
+			while (queue.size() > 0) {
 				String key = queue.firstKey();
-				client.config.setServerURL(new URL(key));
+				client.config.setServerURL(new URL("http://" + queue.get(key)));
 				client.xmlRpcClient.setConfig(client.config);
 				client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
 				queue.remove(key);
@@ -95,6 +90,7 @@ public class RAServer extends Server {
 
 	public void sendOK(String IPandPort) {
 		this.logClock.increase();
+		// System.err.println("sendOK " + queue.toString());
 		try {
 			System.out.println("Sending OK!");
 			client.config.setServerURL(new URL("http://" + IPandPort));
