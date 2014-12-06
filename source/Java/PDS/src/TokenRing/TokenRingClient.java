@@ -9,13 +9,15 @@ import java.util.Vector;
 import org.apache.xmlrpc.XmlRpcException;
 
 import uni_bonn.pds.Client;
+import uni_bonn.pds.Main;
 import uni_bonn.pds.RandomOperation;
 
 public class TokenRingClient extends Client implements Runnable {
 	public static URL nextHost;
 	static Vector<Object> emptyParams = new Vector<>();
-	public static State state;
+	public static State state = State.RELEASED;
 	RandomOperation randomOperation;
+	long startTime;
 
 	static URL findNextHost() {
 		URL currentMachineURL;
@@ -42,11 +44,15 @@ public class TokenRingClient extends Client implements Runnable {
 
 	public TokenRingClient() {
 		System.err.println("TokenRingClient constructor");
-		state = State.HELD;
-		/**********************************************************************************/
-		// config.setServerURL(nextHost);
-		// xmlRpcClient.setConfig(config);
 		randomOperation = new RandomOperation();
+		startTime = System.currentTimeMillis();
+	}
+
+	@Override
+	public void start(int initValue) {
+		System.err.println("I started TokenRing! Token is mine!");
+		state = State.HELD;
+		super.start(initValue);
 	}
 
 	public void enterSection() {
@@ -64,18 +70,19 @@ public class TokenRingClient extends Client implements Runnable {
 	@Override
 	public void run() {
 
-		enterSection();
-		while (state != State.HELD) {
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		while (Main.sessionDuration > System.currentTimeMillis() - startTime) {
+			enterSection();
+			while (state != State.HELD) {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+			executeForAll("Server.doCalculation",
+					randomOperation.nextOperationAndValue());
+			exitSection();
 		}
-		executeForAll("Server.doCalculation",
-				randomOperation.nextOperationAndValue());
-		exitSection();
 	}
 
 	public static void sendToken() {

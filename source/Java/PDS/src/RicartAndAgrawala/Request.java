@@ -1,4 +1,4 @@
-package RicardAndAgrawala;
+package RicartAndAgrawala;
 
 import java.util.Vector;
 

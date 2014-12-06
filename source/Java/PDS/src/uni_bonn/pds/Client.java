@@ -26,7 +26,7 @@ public class Client {
 
 	public Client() {
 		config = new XmlRpcClientConfigImpl();
-		System.out.println("Creating XmlRpcClient...");
+	//	System.out.println("Creating XmlRpcClient...");
 		xmlRpcClient = new XmlRpcClient();
 	}
 

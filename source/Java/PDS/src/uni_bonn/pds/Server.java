@@ -2,6 +2,7 @@ package uni_bonn.pds;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.*;
 
@@ -9,15 +10,15 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.webserver.WebServer;
 import org.apache.xmlrpc.server.*;
 
-import RicardAndAgrawala.RAClient;
-import RicardAndAgrawala.RAServer;
+import RicartAndAgrawala.RAClient;
+import RicartAndAgrawala.RAServer;
 import TokenRing.TokenRingClient;
 import TokenRing.TokenRingServer;
 
 public class Server {
 
 	public static long processingValue = 0;
-	public static int PORT = 9999; // Use only ports higher than 1024
+	public static int PORT = findFreePort(); // Use only ports higher than 1024
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -88,21 +89,6 @@ public class Server {
 		return ips;
 	}
 
-	// /* Joins to network via network member Ip and Port */
-	// public Object[] join(String newMemberIPandPort) {
-	// try {
-	// if (machinesIPs.add(newMemberIPandPort)) {
-	// Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
-	// System.out.println("Client is connected!");
-	// System.out.println("IP:Port=" + newMemberIPandPort);
-	// }
-	// } catch (MalformedURLException e) {
-	// System.err.println("Wrong new member IP and port!");
-	// System.err.println(e.getMessage());
-	// }
-	// return machinesIPs.toArray();
-	// }
-
 	/* Receive initial value and start algorithm */
 	public boolean start(int initValue) {
 		System.out.println("Start calculations!");
@@ -127,27 +113,52 @@ public class Server {
 		return false;
 	}
 
-	public boolean doCalculation(String operation, String value) {
-		int intValue = Integer.parseInt(value);
+	public boolean doCalculation(String operation, int value) {
+
 		switch (operation) {
 		case "sum":
-			processingValue += intValue;
+			processingValue += value;
 			break;
 		case "div":
-			processingValue /= intValue;
+			processingValue /= value;
 			break;
 		case "sub":
-			processingValue -= intValue;
+			processingValue -= value;
 			break;
 		case "mul":
-			processingValue *= intValue;
+			processingValue *= value;
 			break;
 		default:
 			System.err.println("Unknown operation in doCalculation!");
 			return false;
 		}
 		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value);
+				+ value + " PROCESSING_VALUE:" + processingValue + "\n");
 		return true;
+	}
+
+	private static int findFreePort() {
+		ServerSocket socket = null;
+		try {
+			socket = new ServerSocket(0);
+			socket.setReuseAddress(true);
+			int port = socket.getLocalPort();
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// Ignore IOException on close()
+			}
+			return port;
+		} catch (IOException e) {
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+		throw new IllegalStateException(
+				"Could not find a free TCP/IP port to start Server on");
 	}
 }

@@ -1,4 +1,4 @@
-package RicardAndAgrawala;
+package RicartAndAgrawala;
 
 public class LCE { // Extended Lamport Clocks
 
