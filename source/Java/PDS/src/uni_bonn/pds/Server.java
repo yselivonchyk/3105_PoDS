@@ -114,7 +114,6 @@ public class Server {
 	}
 
 	public boolean doCalculation(String operation, int value) {
-
 		switch (operation) {
 		case "sum":
 			processingValue += value;
