@@ -5,9 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
-
-import org.apache.xmlrpc.XmlRpcException;
-
 import uni_bonn.pds.Client;
 import uni_bonn.pds.Main;
 import uni_bonn.pds.RandomOperation;
@@ -15,6 +12,7 @@ import uni_bonn.pds.RandomOperation;
 public class TokenRingClient extends Client implements Runnable {
 	public static URL nextHost;
 	static Vector<Object> emptyParams = new Vector<>();
+
 	public static State state = State.RELEASED;
 	RandomOperation randomOperation;
 	long startTime;
@@ -45,7 +43,6 @@ public class TokenRingClient extends Client implements Runnable {
 	public TokenRingClient() {
 		System.err.println("TokenRingClient constructor");
 		randomOperation = new RandomOperation();
-		startTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -64,12 +61,18 @@ public class TokenRingClient extends Client implements Runnable {
 	public void exitSection() {
 		System.out.println("Exiting critical area!");
 		state = State.RELEASED;
-		sendToken();
+		TokenRingServer.sendToken();
+	}
+
+	public void finilize() {
+		executeForAll("Server.finilize", emptyParams);
+		System.out.println("FINISHED SESSION!");
+		TokenRingServer.finished = true;
 	}
 
 	@Override
 	public void run() {
-
+		startTime = System.currentTimeMillis();
 		while (Main.sessionDuration > System.currentTimeMillis() - startTime) {
 			enterSection();
 			while (state != State.HELD) {
@@ -83,20 +86,7 @@ public class TokenRingClient extends Client implements Runnable {
 					randomOperation.nextOperationAndValue());
 			exitSection();
 		}
-	}
-
-	public static void sendToken() {
-		try {
-			state = State.RELEASED;
-			System.err.println("Sending token to " + nextHost);
-			config.setServerURL(nextHost);
-			xmlRpcClient.execute("Server.receiveToken", emptyParams);
-			// System.err.println("Token is sent to: "+config.getServerURL());
-		} catch (XmlRpcException e) {
-			System.err.println("Error while sending token!");
-			e.printStackTrace();
-		}
-
+		finilize();
 	}
 
 }

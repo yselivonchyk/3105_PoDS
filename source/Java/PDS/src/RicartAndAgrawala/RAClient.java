@@ -16,7 +16,6 @@ public class RAClient extends Client implements Runnable {
 		state = State.RELEASED;
 		request = new Request();
 		randomOperation = new RandomOperation();
-		startTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -53,10 +52,9 @@ public class RAClient extends Client implements Runnable {
 
 	@Override
 	public void run() {
-
+		startTime = System.currentTimeMillis();
 		while (Main.sessionDuration > System.currentTimeMillis() - startTime) {
 			try {
-				Thread.sleep(randomOperation.getRandomWaitingTime());
 				enterSection();
 				exitSection();
 			} catch (InterruptedException e) {
