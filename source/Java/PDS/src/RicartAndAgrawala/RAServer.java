@@ -21,14 +21,24 @@ public class RAServer extends Server {
 
 	public boolean receiveRequest(String IPandPort, String TimeStamp, String ID) {
 		System.out.println("Request received!");
-		logClock.adjustClocks(Integer.parseInt(TimeStamp));
-		if ((RAClient.state == State.HELD)
-				|| ((RAClient.state == State.WANTED) && RAClient.request
-						.getTimestampAndID().compareTo(TimeStamp + ID) == -1)) {
-			queue.put(TimeStamp + ID, IPandPort);
-			System.err.println("Adding request to a queue!");
-		} else {
-			sendOK(IPandPort);
+		// System.err.println("request " + queue.toString());
+		synchronized (RAClient.request) {
+
+			logClock.adjustClocks(Integer.parseInt(TimeStamp));
+			if ((RAClient.state == State.HELD)
+					|| ((RAClient.state == State.WANTED) && RAClient.request
+							.getTimestampAndID().compareTo(TimeStamp + ID) == -1)) {
+				queue.put(TimeStamp + ID, IPandPort);
+				System.err.println("Adding request to a queue!");
+				System.out.println("Received: " + TimeStamp + ID
+						+ " Current: " + RAClient.request.getTimestampAndID());
+
+				// System.err.println("request " + queue.toString());
+			} else {
+				sendOK(IPandPort);
+				// System.err.println(queue.toString());
+			}
+			// System.err.println("request " + queue.toString());
 		}
 		return false;
 	}
@@ -37,11 +47,12 @@ public class RAServer extends Server {
 		numberOfReplies += 1;
 		System.out.println("Ok received! " + numberOfReplies + " out of "
 				+ Server.machinesIPs.size());
+		// System.err.println("receiveOK " + queue.toString());
 		return true;
 	}
 
 	@Override
-	public boolean doCalculation(String operation, int value) {
+	public boolean doCalculation(String operation, String value) {
 		RAServer.logClock.increase();
 		return super.doCalculation(operation, value);
 	}
@@ -65,6 +76,7 @@ public class RAServer extends Server {
 
 	public void sendOK(String IPandPort) {
 		RAServer.logClock.increase();
+		// System.err.println("sendOK " + queue.toString());
 		try {
 			System.out.println("Sending OK!");
 			Client.config.setServerURL(new URL("http://" + IPandPort));

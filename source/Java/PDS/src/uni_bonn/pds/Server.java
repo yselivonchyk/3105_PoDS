@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.server.PropertyHandlerMapping;
+import org.apache.xmlrpc.server.XmlRpcServer;
+import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 import org.apache.xmlrpc.webserver.WebServer;
-import org.apache.xmlrpc.server.*;
 
 import RicartAndAgrawala.RAClient;
 import RicartAndAgrawala.RAServer;
@@ -18,7 +21,7 @@ import TokenRing.TokenRingServer;
 public class Server {
 
 	public static long processingValue = 0;
-	public static int PORT = findFreePort(); // Use only ports higher than 1024
+	public static final int PORT = findFreePort();
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -91,6 +94,9 @@ public class Server {
 
 	/* Receive initial value and start algorithm */
 	public boolean start(int initValue) {
+		
+		finishedSessions=0;
+		
 		System.out.println("Start calculations!");
 		processingValue = initValue;
 		if (Main.algorithmType == 0) {
@@ -110,29 +116,43 @@ public class Server {
 			System.out.println("Machine " + leavingMachine + " left network!");
 			return true;
 		}
+		// TODO delete from serverURLs
 		return false;
 	}
 
-	public boolean doCalculation(String operation, int value) {
+	public boolean doCalculation(String operation, String value) {
+		int intValue = Integer.parseInt(value);
 		switch (operation) {
 		case "sum":
-			processingValue += value;
+			processingValue += intValue;
 			break;
 		case "div":
-			processingValue /= value;
+			processingValue /= intValue;
 			break;
 		case "sub":
-			processingValue -= value;
+			processingValue -= intValue;
 			break;
 		case "mul":
-			processingValue *= value;
+			processingValue *= intValue;
 			break;
 		default:
 			System.err.println("Unknown operation in doCalculation!");
 			return false;
 		}
 		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value + " PROCESSING_VALUE:" + processingValue + "\n");
+				+ value + "  PROCESSING_VALUE: " + processingValue);
+		return true;
+	}
+
+	public static int finishedSessions = 0;
+
+	public boolean finalizeSession() {
+		finishedSessions++;
+		System.out.println("FINISHED RECEIVED!" + finishedSessions);
+		if (finishedSessions == machinesIPs.size()) {
+			System.out.println("Session Ended! FINAL RESULT: "
+					+ processingValue);
+		}
 		return true;
 	}
 
@@ -160,4 +180,5 @@ public class Server {
 		throw new IllegalStateException(
 				"Could not find a free TCP/IP port to start Server on");
 	}
+
 }

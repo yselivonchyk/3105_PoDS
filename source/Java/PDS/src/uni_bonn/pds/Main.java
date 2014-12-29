@@ -1,5 +1,6 @@
 package uni_bonn.pds;
 
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -12,8 +13,6 @@ import TokenRing.TokenRingServer;
 
 public class Main {
 
-	public static final int sessionDuration = 20000;
-	public static boolean standalone = true;
 	public static int algorithmType = 1; // 1-R&A 0-TokenRing
 	public static Client client;
 

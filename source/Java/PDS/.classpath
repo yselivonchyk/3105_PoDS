@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Elchin/workspace/PDS/commons-logging-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Elchin/workspace/PDS/ws-commons-util-1.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Elchin/workspace/PDS/xmlrpc-client-3.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Elchin/workspace/PDS/xmlrpc-common-3.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Elchin/workspace/PDS/xmlrpc-server-3.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Elchin/Downloads/apache-xmlrpc-3.1.3/lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Elchin/Downloads/apache-xmlrpc-3.1.3/lib/ws-commons-util-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Elchin/Downloads/apache-xmlrpc-3.1.3/lib/xmlrpc-client-3.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Elchin/Downloads/apache-xmlrpc-3.1.3/lib/xmlrpc-common-3.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Elchin/Downloads/apache-xmlrpc-3.1.3/lib/xmlrpc-server-3.1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

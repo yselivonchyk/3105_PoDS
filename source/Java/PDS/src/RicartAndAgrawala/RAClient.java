@@ -1,7 +1,6 @@
 package RicartAndAgrawala;
 
 import uni_bonn.pds.Client;
-import uni_bonn.pds.Main;
 import uni_bonn.pds.RandomOperation;
 
 public class RAClient extends Client implements Runnable {
@@ -26,6 +25,7 @@ public class RAClient extends Client implements Runnable {
 
 	public void enterSection() throws InterruptedException {
 		System.out.println("Entering critical area!");
+
 		RAServer.numberOfReplies = 0;
 		state = State.WANTED;
 		request.modify(logClock.getCurrentTimeStamp());
@@ -38,10 +38,11 @@ public class RAClient extends Client implements Runnable {
 		state = State.HELD;
 
 		System.err.println("Access to critical area obtained!");
-
+		// System.err.println(RAServer.queue.toString());
 		/** Do calculations on all machines */
 		this.executeForAll("Server.doCalculation",
 				randomOperation.nextOperationAndValue());
+
 	}
 
 	public void exitSection() {
@@ -53,13 +54,16 @@ public class RAClient extends Client implements Runnable {
 	@Override
 	public void run() {
 		startTime = System.currentTimeMillis();
-		while (Main.sessionDuration > System.currentTimeMillis() - startTime) {
+		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
+
 			try {
+				Thread.sleep(randomOperation.getRandomWaitingTime());
 				enterSection();
 				exitSection();
 			} catch (InterruptedException e) {
 				System.err.println(e.getMessage());
 			}
 		}
+		finalizeSession();
 	}
 }

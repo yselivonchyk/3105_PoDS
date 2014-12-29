@@ -5,15 +5,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
+
+import org.apache.xmlrpc.XmlRpcException;
+
 import uni_bonn.pds.Client;
-import uni_bonn.pds.Main;
 import uni_bonn.pds.RandomOperation;
 
 public class TokenRingClient extends Client implements Runnable {
 	public static URL nextHost;
 	static Vector<Object> emptyParams = new Vector<>();
-
-	public static State state = State.RELEASED;
+	public static State state;
 	RandomOperation randomOperation;
 	long startTime;
 
@@ -42,14 +43,11 @@ public class TokenRingClient extends Client implements Runnable {
 
 	public TokenRingClient() {
 		System.err.println("TokenRingClient constructor");
-		randomOperation = new RandomOperation();
-	}
-
-	@Override
-	public void start(int initValue) {
-		System.err.println("I started TokenRing! Token is mine!");
 		state = State.HELD;
-		super.start(initValue);
+		/**********************************************************************************/
+		// config.setServerURL(nextHost);
+		// xmlRpcClient.setConfig(config);
+		randomOperation = new RandomOperation();
 	}
 
 	public void enterSection() {
@@ -61,24 +59,19 @@ public class TokenRingClient extends Client implements Runnable {
 	public void exitSection() {
 		System.out.println("Exiting critical area!");
 		state = State.RELEASED;
-		TokenRingServer.sendToken();
-	}
-
-	public void finilize() {
-		executeForAll("Server.finilize", emptyParams);
-		System.out.println("FINISHED SESSION!");
-		TokenRingServer.finished = true;
+		sendToken();
 	}
 
 	@Override
 	public void run() {
 		startTime = System.currentTimeMillis();
-		while (Main.sessionDuration > System.currentTimeMillis() - startTime) {
+		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
 			enterSection();
 			while (state != State.HELD) {
 				try {
 					Thread.sleep(200);
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -86,7 +79,27 @@ public class TokenRingClient extends Client implements Runnable {
 					randomOperation.nextOperationAndValue());
 			exitSection();
 		}
-		finilize();
+		finalizeSession();
 	}
 
+	public static void sendToken() {
+		try {
+			state = State.RELEASED;
+			System.err.println("Sending token to " + nextHost);
+			config.setServerURL(nextHost);
+			xmlRpcClient.execute("Server.receiveToken", emptyParams);
+			// System.err.println("Token is sent to: "+config.getServerURL());
+		} catch (XmlRpcException e) {
+			System.err.println("Error while sending token!");
+			e.printStackTrace();
+		}
+
+	}
+
+	
+	@Override
+	public void finalizeSession() {
+		TokenRingServer.finished=true;
+		super.finalizeSession();
+	}
 }

@@ -16,6 +16,7 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
+	public final long SESSION_LENGTH = 5000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
 	public static XmlRpcClient xmlRpcClient;
@@ -26,7 +27,7 @@ public class Client {
 
 	public Client() {
 		config = new XmlRpcClientConfigImpl();
-	//	System.out.println("Creating XmlRpcClient...");
+		System.out.println("Creating XmlRpcClient...");
 		xmlRpcClient = new XmlRpcClient();
 	}
 
@@ -113,6 +114,11 @@ public class Client {
 				System.err.println(e.getMessage());
 			}
 		}
+	}
+
+	public void finalizeSession() {
+		params.removeAllElements();
+		executeForAll("Server.finalizeSession", params);
 	}
 
 }
