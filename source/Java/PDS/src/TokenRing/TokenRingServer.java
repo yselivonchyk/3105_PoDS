@@ -20,6 +20,8 @@ public class TokenRingServer extends Server {
 		if ((TokenRingClient.state == State.RELEASED) && (!finished)) {
 			if (finishedSessions < machinesIPs.size() - 1)
 				TokenRingClient.sendToken();
+			else
+				TokenRingClient.state = State.HELD;
 		} else
 			TokenRingClient.state = State.HELD;
 		return true;

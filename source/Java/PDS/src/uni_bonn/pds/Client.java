@@ -16,7 +16,7 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 5000;
+	public final long SESSION_LENGTH = 60000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
 	public static XmlRpcClient xmlRpcClient;
@@ -44,7 +44,7 @@ public class Client {
 
 		System.out.println("Setting URL...");
 		try {
-			config.setServerURL(new URL("http://" + memberIPandPort));
+			config.setServerURL(new URL("http://" + memberIPandPort+"/xmlrpc"));
 
 			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
@@ -52,12 +52,14 @@ public class Client {
 			params.removeAllElements();
 			params.add(currentMachineInfo);
 			try {
-				Object[] result = (Object[]) xmlRpcClient.execute(
-						"Server.join", params);
+				Object res = xmlRpcClient.execute("Node.join", params);
+				
+				Object[] result =  (Object[]) res;
+				
 				for (Object obj : result) {
 					String temp = (String) obj;
 					if (Server.machinesIPs.add(temp))
-						serverURLs.add(new URL("http://" + temp));
+						serverURLs.add(new URL("http://" + temp+"/xmlrpc"));
 				}
 				System.out.println("Successfully connected!\nData received");
 
@@ -65,7 +67,7 @@ public class Client {
 				for (int i = 0; i < serverURLs.size(); i++) {
 					config.setServerURL(serverURLs.get(i));
 					xmlRpcClient.setConfig(config);
-					xmlRpcClient.execute("Server.join", params);
+					xmlRpcClient.execute("Node.join", params);
 				}
 			} catch (XmlRpcException e) {
 				System.err.println(e.getMessage());
@@ -83,7 +85,7 @@ public class Client {
 			for (URL url : serverURLs) {
 				config.setServerURL(url);
 				xmlRpcClient.setConfig(config);
-				if (!(boolean) xmlRpcClient.execute("Server.signOff", params)) {
+				if (!(boolean) xmlRpcClient.execute("Node.signOff", params)) {
 					System.out.println("Failed to signOff from " + params);
 				}
 			}
@@ -98,9 +100,10 @@ public class Client {
 	public void start(int initValue) {
 		Vector<Object> initialValue = new Vector<Object>();
 		initialValue.add(initValue);
-		executeForAll("Server.start", initialValue);
+		executeForAll("Node.start", initialValue);
 	}
 
+	/* Function for multicasting */
 	public void executeForAll(String methodName, Vector params) {
 
 		for (URL url : serverURLs) {
@@ -118,7 +121,7 @@ public class Client {
 
 	public void finalizeSession() {
 		params.removeAllElements();
-		executeForAll("Server.finalizeSession", params);
+		executeForAll("Node.finalizeSession", params);
 	}
 
 }

@@ -64,7 +64,7 @@ public class RAServer extends Server {
 				String key = queue.firstKey();
 				Client.config.setServerURL(new URL("http://" + queue.get(key)));
 				Client.xmlRpcClient.setConfig(Client.config);
-				Client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
+				Client.xmlRpcClient.execute("Node.receiveOK", emptyParams);
 				queue.remove(key);
 			}
 		} catch (Exception e) {
@@ -81,7 +81,7 @@ public class RAServer extends Server {
 			System.out.println("Sending OK!");
 			Client.config.setServerURL(new URL("http://" + IPandPort));
 			Client.xmlRpcClient.setConfig(Client.config);
-			Client.xmlRpcClient.execute("Server.receiveOK", emptyParams);
+			Client.xmlRpcClient.execute("Node.receiveOK", emptyParams);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();

@@ -1,0 +1,13 @@
+F:\MyProjects\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe.config
+F:\MyProjects\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe
+F:\MyProjects\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.pdb
+F:\MyProjects\DistributedCalculator\DistributedCalculator\bin\Debug\CookComputing.XmlRpcV2.dll
+F:\MyProjects\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.exe
+F:\MyProjects\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.pdb
+F:\MyProjects\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.csprojResolveAssemblyReference.cache
+F:\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe.config
+F:\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.exe
+F:\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.pdb
+F:\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe
+F:\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.pdb
+F:\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.csprojResolveAssemblyReference.cache

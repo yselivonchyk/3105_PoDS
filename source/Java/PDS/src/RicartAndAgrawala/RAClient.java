@@ -40,7 +40,7 @@ public class RAClient extends Client implements Runnable {
 		System.err.println("Access to critical area obtained!");
 		// System.err.println(RAServer.queue.toString());
 		/** Do calculations on all machines */
-		this.executeForAll("Server.doCalculation",
+		this.executeForAll("Node.doCalculation",
 				randomOperation.nextOperationAndValue());
 
 	}

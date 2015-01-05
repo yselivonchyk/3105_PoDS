@@ -48,9 +48,9 @@ public class Server {
 		// System.out.println("Adding handlers...");
 		try {
 			if (Main.algorithmType == 0)
-				phm.addHandler("Server", TokenRingServer.class);
+				phm.addHandler("Node", TokenRingServer.class);
 			else
-				phm.addHandler("Server", RAServer.class);
+				phm.addHandler("Node", RAServer.class);
 
 		} catch (XmlRpcException e) {
 			System.err.println(e.getMessage());
@@ -140,7 +140,7 @@ public class Server {
 			return false;
 		}
 		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value + "  PROCESSING_VALUE: " + processingValue);
+				+ value + "  PROCESSING_VALUE: " + processingValue+"\n");
 		return true;
 	}
 
@@ -148,7 +148,7 @@ public class Server {
 
 	public boolean finalizeSession() {
 		finishedSessions++;
-		System.out.println("FINISHED RECEIVED!" + finishedSessions);
+		System.out.println("FINISHED RECEIVED! Machines: " + finishedSessions);
 		if (finishedSessions == machinesIPs.size()) {
 			System.out.println("Session Ended! FINAL RESULT: "
 					+ processingValue);

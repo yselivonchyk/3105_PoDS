@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CalculationNode")]
+[assembly: AssemblyTitle("DistributedCalculator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CalculationNode")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("Sky123.Org")]
+[assembly: AssemblyProduct("DistributedCalculator")]
+[assembly: AssemblyCopyright("Copyright © Sky123.Org 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a6642c5d-05a0-41ea-93c3-c4f688edcc02")]
+[assembly: Guid("13dedd08-8a46-4eb9-bc35-919e4de40c52")]
 
 // Version information for an assembly consists of the following four values:
 //

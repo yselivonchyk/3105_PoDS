@@ -92,7 +92,7 @@ public class Main {
 		else
 			client = new RAClient();
 
-		System.out.print("\n0-Join  1-Sign off  2-Standalone mode \n-> ");
+		System.out.print("\n0-Join\n1-Sign off\n2-Standalone mode \n-> ");
 		userDecision = reader.nextInt();
 		switch (userDecision) {
 		case 0:
@@ -114,7 +114,7 @@ public class Main {
 		}
 
 		if (userDecision == 0) {
-			System.out.print("\n0-Sign off  1-Start  2-Standalone mode \n-> ");
+			System.out.print("\n0-Sign off\n1-Start\n2-Standalone mode \n-> ");
 			userDecision = reader.nextInt();
 			switch (userDecision) {
 			case 0:
