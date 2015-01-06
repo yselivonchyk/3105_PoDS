@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CookComputing.XmlRpc;
 
 namespace DistributedCalculator.TokenRing
 {
-    class TokenRingClient: Client
-    {
+    
 
-    }
 }

@@ -11,3 +11,9 @@ F:\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.p
 F:\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe
 F:\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.pdb
 F:\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.csprojResolveAssemblyReference.cache
+C:\Users\Elchin\Documents\3105_PoDS\source\CNET\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe.config
+C:\Users\Elchin\Documents\3105_PoDS\source\CNET\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.exe
+C:\Users\Elchin\Documents\3105_PoDS\source\CNET\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.pdb
+C:\Users\Elchin\Documents\3105_PoDS\source\CNET\DistributedCalculator\DistributedCalculator\obj\Debug\DistributedCalculator.csprojResolveAssemblyReference.cache
+C:\Users\Elchin\Documents\3105_PoDS\source\CNET\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.exe
+C:\Users\Elchin\Documents\3105_PoDS\source\CNET\DistributedCalculator\DistributedCalculator\bin\Debug\DistributedCalculator.pdb

@@ -14,7 +14,7 @@ namespace DistributedCalculator
 {
     public interface IServiceContract : IXmlRpcProxy
     {
-       
+
         [XmlRpcMethod("Node.join")] //return the nodes in the network
         Object[] join(String thisHostInfo);
 
@@ -24,20 +24,34 @@ namespace DistributedCalculator
         [XmlRpcMethod("Node.start")] //start a round of calculation
         bool start(int initValue);
 
+        [XmlRpcMethod("Node.finalizeSession")]//Counts finished machines
+        bool finalizeSession();
+
     }
 
     public class Client
     {
+       public static int algorithm;
+
+        public enum State
+        {
+            RELEASED, WANTED, HELD
+        };
+
         IServiceContract proxy;
         public static HashSet<String> Nodes = new HashSet<String>();  //store a list of nodes
-        
-     //   private static int port;    //port of this host
 
-      
         public void run()
         {
+
+
             Console.WriteLine("This host is " + Server.thisHostInfo);
             Nodes.Add(Server.thisHostInfo);
+
+            Console.WriteLine("\nChoose algorithm: 0-Token Ring  1-Ricart and Agrawala");
+          
+            algorithm = int.Parse(Console.ReadLine());
+
             while (true)
             {
                 Console.WriteLine("------------------------");
@@ -56,9 +70,7 @@ namespace DistributedCalculator
                         listNodes();
                         break;
                     case 3:
-                        Console.WriteLine("Input an initial value (integer) for the calculation:");
-                        int initValue = int.Parse(Console.ReadLine());
-                        start(initValue);
+                        start();
                         break;
                     case 4:
                         signOff();
@@ -74,7 +86,7 @@ namespace DistributedCalculator
 
         }
 
-        private void join()
+        public void join()
         {
             Console.WriteLine("Input an IP address and port number (split by ':')");
             Console.WriteLine("in the network you want to join:");
@@ -94,7 +106,7 @@ namespace DistributedCalculator
             }
         }
 
-        private void listNodes()
+        public void listNodes()
         {
             //display all the hosts info in the network 
             if (Nodes.Count < 2)
@@ -102,29 +114,41 @@ namespace DistributedCalculator
             else
             {
                 Console.WriteLine("There are {0} hosts in the ring.", Nodes.Count);
-                foreach(String node in Nodes)
+                foreach (String node in Nodes)
                     Console.WriteLine(node);
             }
         }
 
-        private void start(int initValue)
+        public void start()
         {
+            Console.WriteLine("Input an initial value (integer) for the calculation:");
+            int initValue = int.Parse(Console.ReadLine());
+            foreach (String node in Nodes)
+            {
+                proxy.Url = "http://" + node + "/xmlrpc";
+                proxy.start(initValue);
+            }
 
         }
 
-        private void signOff()
+        public void signOff()
         {
             String[] copy = Nodes.ToArray();
-            foreach(String str in copy)
+            foreach (String node in copy)
             {
-                proxy.Url = "http://" + str + "/xmlrpc";
+                proxy.Url = "http://" + node + "/xmlrpc";
                 proxy.signOff(Server.thisHostInfo);
             }
         }
 
-
-
-
-
-    }}
+        public void finalizeSession()
+        {
+            foreach (String node in Nodes)
+            {
+                proxy.Url = "http://" + node + "/xmlrpc";
+                proxy.finalizeSession();
+            }
+        }
+    }
+}
 

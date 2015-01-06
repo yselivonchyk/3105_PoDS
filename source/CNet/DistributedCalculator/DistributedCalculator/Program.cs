@@ -13,6 +13,7 @@ namespace DistributedCalculator
     {
         public static TimeSpan maxDuration = new TimeSpan(0, 0, 20); //calculation duration 20 seconds
 
+
         static void Main(string[] args)
         {
             Client client = new Client();
@@ -22,7 +23,5 @@ namespace DistributedCalculator
             thread1.Start();
             thread2.Start();
         }
-
-    
     }
 }
