@@ -14,6 +14,7 @@ namespace CalculationNode.RicartAgrawala
 	/// </summary>
 	public class RicartAgrawalaClient : ClientBase
 	{
+		public bool IsInterested = false;
 		private static Object outgoingRequestCS = new object();
 
 		public RicartAgrawalaClient(Uri baseServerUri)
@@ -62,14 +63,18 @@ namespace CalculationNode.RicartAgrawala
 			// One request at a time
 			lock (outgoingRequestCS)
 			{
+				IsInterested = true;
+
 				var peers = PeersData.GetAll();
 				var time = PeersData.CurrentTime;
-				Parallel.ForEach(peers,
+				Parallel.ForEach(peers.Where(x => x != LocalServerAddress),
 					peer =>
 					{
 						var siblingProxy = PeersData.GetChannel(peer);
-						siblingProxy.RecieveAccess(LocalServerAddress, time);
+						Console.WriteLine(peer + " give " +siblingProxy.RecieveAccess(LocalServerAddress, time));
 					});
+				PeersData.AwaitCalculationFlag = true;
+				IsInterested = false;
 
 				Parallel.ForEach(peers,
 					peer =>

@@ -10,7 +10,7 @@ namespace CalculationNode
 	{
 		protected Uri BaseServerUri;
 		protected ServiceHost HostObject;
-		protected string LocalServerAddress;
+		internal string LocalServerAddress;
 		private bool Running { get; set; }
 
 		protected ClientBase(Uri baseServerUri)

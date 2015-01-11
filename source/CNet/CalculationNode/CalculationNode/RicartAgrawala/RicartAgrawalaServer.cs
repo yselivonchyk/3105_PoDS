@@ -81,6 +81,7 @@ namespace CalculationNode
 		/// <returns></returns>
 		public bool RecieveAccess(string address, int time)
 		{
+			var localTime = PeersData.CurrentTime;
 			PeersData.CurrentTime = time;
 			// create request object
 			var request = new CalculationRequest
@@ -93,14 +94,18 @@ namespace CalculationNode
 			PeersData.AddRequest(request);
 			// loop
 			var processed = false;
+			var client = (RicartAgrawalaClient) PeersData.LocalClient;
 			while (!processed)
 			{
 				lock (PeersData.QueueLock)
 				{
 					if (!PeersData.AwaitCalculationFlag && PeersData.NexRequest().Guid == request.Guid)
 					{
-						PeersData.AwaitCalculationFlag = true;
-						return true;
+						if (client.LocalServerAddress == address || (!client.IsInterested || localTime - 1 <= time))
+						{
+							PeersData.AwaitCalculationFlag = true;
+							return true;
+						}
 					}
 				}
 				Thread.Yield();
