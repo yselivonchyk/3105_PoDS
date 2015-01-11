@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalculationNode.RicartAgrawala;
 using CookComputing.XmlRpc;
 
 namespace CalculationNode
@@ -11,45 +12,109 @@ namespace CalculationNode
 	/// </summary>
 	public static class PeersData
 	{
-		public static Dictionary<String, IRicardAgrawalaProxy> Fellows =
+		public static ClientBase LocalClient { get; set; }
+		public static Object QueueLock = new object();
+
+		internal static Dictionary<String, IRicardAgrawalaProxy> Fellows =
 			new Dictionary<String, IRicardAgrawalaProxy>();
 
-		public static int CurrentValue;
-
-		private static ClientBase localClientBase;
-		public static ClientBase LocalClient
+		private static int currentValue;
+		internal static int CurrentValue
 		{
-			get { return localClientBase; }
+			get
+			{
+				//Console.WriteLine("Get Current: {0} \t {1}", AppDomain.CurrentDomain.GetHashCode(), currentValue);
+				return currentValue;
+			}
 			set
 			{
-				if (localClientBase != null)
-				{
-					Console.WriteLine("we are fucked");
-				}
-				localClientBase = value;
+				//Console.WriteLine("Set Current: {0} \t {1} <- {2}", AppDomain.CurrentDomain.GetHashCode(), currentValue, value);
+				currentValue = value;	
 			}
+		}
+
+		internal static bool AwaitCalculationFlag;
+
+		private static List<CalculationRequest> Queue { get; set; }
+		private static int currentTime;
+
+		public static int CurrentTime
+		{
+			get
+			{
+				currentTime++;
+				return currentTime++;
+			}
+			set
+			{
+				if (value > currentTime)
+					currentTime = value;
+			}
+		}
+
+		static PeersData()
+		{
+			Queue = new List<CalculationRequest>();
 		}
 
 		public static void Add(string address)
 		{
 			// put address into collection and create channelFactory for this address
-			if (!Fellows.ContainsKey(address))
-			{
-				var proxy = XmlRpcProxyGen.Create<IRicardAgrawalaProxy>();
-				proxy.Url = address;
+			if (Fellows.ContainsKey(address)) return;
 
-				Fellows[address] = proxy;
+			var proxy = XmlRpcProxyGen.Create<IRicardAgrawalaProxy>();
+			proxy.Url = address;
+			Fellows[address] = proxy;
+		}
+
+
+		#region Request Queue
+
+		public static void AddRequest(CalculationRequest request)
+		{
+			lock (QueueLock)
+			{
+				Queue.Add(request);
+				Queue = Queue.OrderBy(x => x.Time).ThenBy(x => x.Address).ToList();
+
+				//debug
+				if (Queue.Count() > 1)
+					foreach (var calculationRequest in Queue.ToList())
+						Console.WriteLine(calculationRequest.Time + " " + calculationRequest.Address);
 			}
 		}
+
+		public static CalculationRequest PopRequest()
+		{
+			lock (QueueLock)
+			{
+				if(!AwaitCalculationFlag)
+					Console.WriteLine("THIS IS NOT HAPPENING");
+				var request = Queue.First();
+				Queue.Remove(request);
+				//ConsoleExtentions.Log("Reqest removed from queue: " + request.Address);
+				AwaitCalculationFlag = false;
+				return request;
+			}
+		}
+
+		public static CalculationRequest NexRequest()
+		{
+			lock (QueueLock)
+			{
+				return Queue.First();
+			}
+		}
+
+		#endregion Request Queue
+
 
 		public static void Remove(string address)
 		{
 			if(Fellows.ContainsKey(address))
 				Fellows.Remove(address);
 			else
-			{
 				Console.WriteLine("Warning. Can not remove {0} because it is not in the list", address);
-			}
 		}
 
 		public static void Empty()

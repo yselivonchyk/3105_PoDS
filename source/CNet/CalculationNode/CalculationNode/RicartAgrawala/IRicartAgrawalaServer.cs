@@ -20,6 +20,9 @@ namespace CalculationNode
 		[XmlRpcMethod("Node.doCalculation")]
 		bool DoCalculation(String operation, int value);
 
+		[XmlRpcMethod("Node.receiveRequest")]
+		bool RecieveAccess(String address, int time);
+
 		//[XmlRpcMethod( "Server.sum")]
 		//bool Sum(int param);
 

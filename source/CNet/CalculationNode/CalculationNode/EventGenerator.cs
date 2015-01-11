@@ -14,9 +14,7 @@ namespace CalculationNode
 		/// <param name="avgDelay">average delay between events in milliseconds</param>
 		public static void Start(ClientBase client, int sessionLength, int avgDelay)
 		{
-			Console.WriteLine(PeersData.LocalClient.GetHashCode());
-			Console.WriteLine(AppDomain.CurrentDomain.GetHashCode());
-			var generator = new Random();
+			var generator = new Random(AppDomain.CurrentDomain.GetHashCode());
 			var watch = Stopwatch.StartNew();
 			Console.WriteLine("genarator: " + generator.GetHashCode());
 			while (true)
@@ -29,7 +27,7 @@ namespace CalculationNode
 				// termination condition
 				if (watch.ElapsedMilliseconds > sessionLength)
 					return;
-				ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " " + wait);
+				ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation);
 				
 				switch ((Operations)operation)
 				{
@@ -37,7 +35,7 @@ namespace CalculationNode
 						client.Divide(param);
 						break;
 					case Operations.Multuply:
-						client.Divide(param);
+						client.Multiply(param);
 						break;
 					case Operations.Subtract:
 						client.Subtract(param);

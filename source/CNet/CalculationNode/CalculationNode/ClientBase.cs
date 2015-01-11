@@ -93,7 +93,8 @@ namespace CalculationNode
 				return;
 			}
 
-			EventGenerator.Start(this, 20000, 1000);
+			EventGenerator.Start(this, 2000, 100);
+			ConsoleExtentions.Log("Final value: " + PeersData.CurrentValue);
 		}
 
 		public abstract void Sum(int param);

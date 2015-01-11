@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
@@ -13,7 +14,10 @@ namespace CalculationNode.RicartAgrawala
 	/// </summary>
 	public class RicartAgrawalaClient : ClientBase
 	{
-		public RicartAgrawalaClient(Uri baseServerUri) : base(baseServerUri)
+		private static Object outgoingRequestCS = new object();
+
+		public RicartAgrawalaClient(Uri baseServerUri)
+			: base(baseServerUri)
 		{
 			var localServerUri = BaseServerUri;
 			LocalServerAddress = localServerUri.ToString();
@@ -28,7 +32,7 @@ namespace CalculationNode.RicartAgrawala
 		   );
 			ChannelServices.RegisterChannel(channel, false);
 			RemotingConfiguration.RegisterWellKnownServiceType(
-				typeof (RicartAgrawalaServer),
+				typeof(RicartAgrawalaServer),
 				"xmlrpc",
 				WellKnownObjectMode.Singleton);
 		}
@@ -55,18 +59,31 @@ namespace CalculationNode.RicartAgrawala
 
 		private void PerformOperation(string op, int param)
 		{
-			Parallel.ForEach(PeersData.GetAll(),
-				peer =>
-				{
-					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.DoCalculation(op, param);
-				});
+			// One request at a time
+			lock (outgoingRequestCS)
+			{
+				var peers = PeersData.GetAll();
+				var time = PeersData.CurrentTime;
+				Parallel.ForEach(peers,
+					peer =>
+					{
+						var siblingProxy = PeersData.GetChannel(peer);
+						siblingProxy.RecieveAccess(LocalServerAddress, time);
+					});
+
+				Parallel.ForEach(peers,
+					peer =>
+					{
+						var siblingProxy = PeersData.GetChannel(peer);
+						siblingProxy.DoCalculation(op, param);
+					});
+			}
 		}
 
 		public void ListPeers()
 		{
 			Console.WriteLine("\n\rPeers data:");
-			foreach (var peer in PeersData.GetAll())
+			foreach (var peer in PeersData.GetAll().OrderBy(x => x))
 			{
 				Console.WriteLine(peer);
 			}
