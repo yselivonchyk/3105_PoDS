@@ -39,12 +39,18 @@ public class Client {
 			return null;
 		}
 	}
+	
+	public static URL addressToUrl(String address) throws MalformedURLException{
+		if(!address.contains("http://"))
+			address = "http://" + address + "/xmlrpc";
+		return new URL(address);
+	}
 
 	public void join(String memberIPandPort) {
 
 		System.out.println("Setting URL...");
 		try {
-			config.setServerURL(new URL("http://" + memberIPandPort+"/xmlrpc"));
+			config.setServerURL(addressToUrl(memberIPandPort));
 
 			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
@@ -59,7 +65,7 @@ public class Client {
 				for (Object obj : result) {
 					String temp = (String) obj;
 					if (Server.machinesIPs.add(temp))
-						serverURLs.add(new URL("http://" + temp+"/xmlrpc"));
+						serverURLs.add(addressToUrl(memberIPandPort));
 				}
 				System.out.println("Successfully connected!\nData received");
 

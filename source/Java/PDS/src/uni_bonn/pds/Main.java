@@ -80,9 +80,9 @@ public class Main {
 		}
 
 		try {
-			System.out.println("Node IP:"
+			System.out.println("Node endpoint: "
 					+ InetAddress.getLocalHost().toString().split("/")[1]
-					+ "  Port: " + Server.PORT);
+					+ ":" + Server.PORT);
 		} catch (UnknownHostException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
