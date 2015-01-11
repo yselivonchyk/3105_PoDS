@@ -32,12 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Samples.XmlRpc">
-      <HintPath>..\..\Microsoft.Samples.XmlRpc.dll</HintPath>
+    <Reference Include="CookComputing.XmlRpcV2">
+      <HintPath>..\..\..\..\libs\CookComputing\CookComputing.XmlRpcV2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +52,7 @@
     <Compile Include="Extentions\ConsoleExtentions.cs" />
     <Compile Include="Extentions\Constants.cs" />
     <Compile Include="Extentions\NetworkExtentions.cs" />
+    <Compile Include="RicartAgrawala\IRicardAgrawalaProxy.cs" />
     <Compile Include="RicartAgrawala\IRicartAgrawalaServer.cs" />
     <Compile Include="IClient.cs" />
     <Compile Include="PeersData.cs" />

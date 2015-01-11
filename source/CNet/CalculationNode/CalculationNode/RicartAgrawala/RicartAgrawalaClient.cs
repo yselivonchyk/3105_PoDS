@@ -1,6 +1,10 @@
 ﻿using System;
-using System.ServiceModel;
-using Microsoft.Samples.XmlRpc;
+using System.Collections;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Http;
+using CalculationNode.Extentions;
+using CookComputing.XmlRpc;
 
 namespace CalculationNode.RicartAgrawala
 {
@@ -11,15 +15,22 @@ namespace CalculationNode.RicartAgrawala
 	{
 		public RicartAgrawalaClient(Uri baseServerUri) : base(baseServerUri)
 		{
-			// Start local server to process request from other nodes
 			var localServerUri = BaseServerUri;
 			LocalServerAddress = localServerUri.ToString();
-			HostObject = new ServiceHost(typeof(RicartAgrawalaServer));
-			var epXmlRpc = HostObject.AddServiceEndpoint(typeof(IRicartAgrawalaServer),
-				new WebHttpBinding(WebHttpSecurityMode.None), localServerUri);
-			epXmlRpc.Behaviors.Add(new XmlRpcEndpointBehavior());
-			HostObject.Open();
-			Console.WriteLine("Ricard-Agrawala node listning at {0}", epXmlRpc.ListenUri);
+
+			var props = new Hashtable();
+			props["name"] = "Server";
+			props["port"] = baseServerUri.Port;
+			var channel = new HttpChannel(
+			  props,
+			  null,
+			  new XmlRpcServerFormatterSinkProvider()
+		   );
+			ChannelServices.RegisterChannel(channel, false);
+			RemotingConfiguration.RegisterWellKnownServiceType(
+				typeof (RicartAgrawalaServer),
+				"xmlrpc",
+				WellKnownObjectMode.Singleton);
 		}
 
 		public override void Start(int seed)

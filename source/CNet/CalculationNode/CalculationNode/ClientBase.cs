@@ -2,6 +2,7 @@
 using System.Linq;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using CalculationNode.Extentions;
 
 namespace CalculationNode
 {
@@ -19,28 +20,30 @@ namespace CalculationNode
 		public void Join(Uri knownNodeUri)
 		{
 			// Add self 
-			Join(LocalServerAddress);
+			if(!LocalServerAddress.Equals(knownNodeUri.ToString()))
+				Join(LocalServerAddress);
 			// save information about known node
 			var knownNodeAddress = knownNodeUri.ToString();
 			var peers = Join(knownNodeAddress);
 			var undiscoveredNodesAddresses = peers
-				.Where(x => !x.Equals(knownNodeAddress) && !x.Equals(LocalServerAddress));
+				.Where(x => !knownNodeAddress.Contains(x) && !LocalServerAddress.Contains(x));
 			// Make parallel non-blocking call to all other nodes
 			Parallel.ForEach(
 				undiscoveredNodesAddresses,
-				siblingAddress => Join(siblingAddress));
+				siblingAddress => Join(NetworkExtentions.TryBuildServerUri(siblingAddress).ToString()));
 		}
 
-		// Get a connetion and call remote join operation on a single node
+		// Get a connetion and call remote Join operation on a single node
 		private string[] Join(string nodeAddress)
 		{
 			PeersData.Add(nodeAddress);
 			var siblingProxy = PeersData.GetChannel(nodeAddress);
+
 			var joinResponse = siblingProxy.Join(LocalServerAddress);
 			ConsoleExtentions.Log(String.Format("Got response with {0} items from {1}", 
 				joinResponse.Length,
 				nodeAddress));
-			return joinResponse;
+			return joinResponse.Select(x => x.ToString()).ToArray();
 		}
 
 		public void SingOff()

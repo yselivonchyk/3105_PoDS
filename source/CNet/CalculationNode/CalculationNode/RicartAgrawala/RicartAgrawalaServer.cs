@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ServiceModel;
+using System.Linq;
 
 namespace CalculationNode
 {
-    [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
-    public class RicartAgrawalaServer : IRicartAgrawalaServer
+	public class RicartAgrawalaServer : MarshalByRefObject, IRicartAgrawalaServer
     {
 		public List<String> Fellows = new List<String>();
         public int CurrentValue { get; protected set; }
 
-        public string[] Join(string address)
+        public Object[] Join(string address)
         {
 			ConsoleExtentions.Log("Join: " + address);
 			PeersData.Add(address);
-			return PeersData.GetAll();
+			return PeersData.GetAll().Select(x => (Object)x).ToArray();
         }
 
         public bool SingOff(string address)

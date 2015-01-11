@@ -54,6 +54,19 @@ namespace CalculationNode.Extentions
 			return isAvailable;
 		}
 
+		public static Uri TryBuildServerUri(string address)
+		{
+			if (address.Contains(":") && !address.Contains("//"))
+				return new UriBuilder(
+					Uri.UriSchemeHttp,
+					address.Split(':')[0],
+					Int32.Parse(address.Split(':')[1]),
+					Constants.DefaultRelativePath)
+					.Uri;
+			else
+				return new Uri(address);
+		}
+
 		public static Uri BuildServerUri(string ip, int port, string relativePath)
 		{
 			return new UriBuilder(Uri.UriSchemeHttp, ip, port, relativePath).Uri; ;

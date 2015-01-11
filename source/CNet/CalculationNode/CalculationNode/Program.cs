@@ -38,7 +38,7 @@ namespace CalculationNode
 	    {
 			Console.WriteLine("\nPress key to indicate desired operation:");
 			Console.WriteLine("Enter - start command");
-			Console.WriteLine("J - join command");
+			Console.WriteLine("J - Join command");
 			Console.WriteLine("S - Sign off command");
 			Console.WriteLine("Esc - exit");
 		    while (true)
@@ -52,13 +52,14 @@ namespace CalculationNode
 						ricartAgrawalaClient.SingOff();
 						break;
 					case ConsoleKey.J:
-						Console.WriteLine("Enter url to join:");
-						ricartAgrawalaClient.Join(new Uri(Console.ReadLine()));
+						Console.WriteLine("\n\rEnter url to Join:");
+						ricartAgrawalaClient.Join(
+							NetworkExtentions.TryBuildServerUri(Console.ReadLine()));
 						break;
 					case ConsoleKey.Escape:
 						return;
 					default:
-						Console.WriteLine("Unknown command");
+						Console.WriteLine("\r\nUnknown command");
 						break;
 				}    
 		    }

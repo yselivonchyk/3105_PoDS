@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
-using Microsoft.Samples.XmlRpc;
+using CalculationNode.RicartAgrawala;
+using CookComputing.XmlRpc;
 
 namespace CalculationNode
 {
@@ -12,19 +12,18 @@ namespace CalculationNode
 	/// </summary>
 	public static class PeersData
 	{
-		public static Dictionary<String, ChannelFactory<IRicartAgrawalaServer>> Fellows = 
-			new Dictionary<String, ChannelFactory<IRicartAgrawalaServer>>();
+		public static Dictionary<String, IRicardAgrawalaProxy> Fellows =
+			new Dictionary<String, IRicardAgrawalaProxy>();
 
 		public static void Add(string address)
 		{
 			// put address into collection and create channelFactory for this address
 			if (!Fellows.ContainsKey(address))
 			{
-				var channelFactory = new ChannelFactory<IRicartAgrawalaServer>(
-					new WebHttpBinding(WebHttpSecurityMode.None), new EndpointAddress(address));
-				channelFactory.Endpoint.Behaviors.Add(new XmlRpcEndpointBehavior());
+				var proxy = XmlRpcProxyGen.Create<IRicardAgrawalaProxy>();
+				proxy.Url = address;
 
-				Fellows[address] = channelFactory;
+				Fellows[address] = proxy;
 			}
 		}
 
@@ -44,10 +43,10 @@ namespace CalculationNode
 		}
 
 
-		public static IRicartAgrawalaServer GetChannel(string address)
+		public static IRicardAgrawalaProxy GetChannel(string address)
 		{
 			var fabric = Fellows[address];
-			return fabric.CreateChannel();
+			return fabric;
 		}
 
 		public static string[] GetAll()
