@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using CalculationNode.RicartAgrawala;
@@ -13,10 +12,10 @@ namespace CalculationNode
 
 		public int CurrentValue
 		{
-			get { return PeersData.CurrentValue; }
+			get { return RicardAgrawalaData.CurrentValue; }
 			protected set
 			{
-				PeersData.CurrentValue = value;
+				RicardAgrawalaData.CurrentValue = value;
 			}
 		}
 
@@ -36,7 +35,6 @@ namespace CalculationNode
 
 		public bool Start(int seed)
 		{
-			Console.WriteLine("Server: " + AppDomain.CurrentDomain.GetHashCode() + "\n\r");
 			ConsoleExtentions.Log("Server start recieved: " + seed);
 			CurrentValue = seed;
 			PeersData.LocalClient.StartSelf(seed);
@@ -45,10 +43,6 @@ namespace CalculationNode
 
 		public bool DoCalculation(string operation, int value)
 		{
-			if(!PeersData.AwaitCalculationFlag)
-				Debug.Fail("Calculation was not expected");
-
-			PeersData.PopRequest();
 			var original = CurrentValue;
 			switch (operation)
 			{
@@ -78,11 +72,11 @@ namespace CalculationNode
 		/// </summary>
 		/// <param name="address"></param>
 		/// <param name="time"></param>
-		/// <returns></returns>
-		public bool RecieveAccess(string address, int time)
+		/// <returns>current timestemp</returns>
+		public int RecieveAccess(string address, int time)
 		{
-			var localTime = PeersData.CurrentTime;
-			PeersData.CurrentTime = time;
+			var localTime = RicardAgrawalaData.ExectTime;
+			RicardAgrawalaData.RATimestamp = time;
 			// create request object
 			var request = new CalculationRequest
 			              {
@@ -91,27 +85,31 @@ namespace CalculationNode
 				              Guid = Guid.NewGuid()
 			              };
 			// place into queue
-			PeersData.AddRequest(request);
+			RicardAgrawalaData.AddRequest(request);
 			// loop
-			var processed = false;
 			var client = (RicartAgrawalaClient) PeersData.LocalClient;
-			while (!processed)
+			while (true)
 			{
-				lock (PeersData.QueueLock)
+				lock (RicardAgrawalaData.QueueLock)
 				{
-					if (!PeersData.AwaitCalculationFlag && PeersData.NexRequest().Guid == request.Guid)
+					if (client.LocalServerAddress == address || !client.IsInterested 
+						|| HasPriority(address, time, client.LocalServerAddress, localTime))
 					{
-						if (client.LocalServerAddress == address || (!client.IsInterested || localTime - 1 <= time))
-						{
-							PeersData.AwaitCalculationFlag = true;
-							return true;
-						}
+						RicardAgrawalaData.PopRequest(request);
+						return RicardAgrawalaData.RATimestamp;
 					}
 				}
 				Thread.Yield();
 			}
+		}
 
-			throw new Exception("Unreachable section");
+		private bool HasPriority(string remoteAddress, int remoteTime, string localAddress, int localTime)
+		{
+			if (localTime > remoteTime)
+				return true;
+			if(localTime < remoteTime)
+				return false;
+			return String.Compare(localAddress, remoteAddress, StringComparison.InvariantCulture) > 0;
 		}
 	}
 }

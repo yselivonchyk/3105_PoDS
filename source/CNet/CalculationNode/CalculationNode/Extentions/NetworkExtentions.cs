@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CalculationNode.Extentions
 {
@@ -16,14 +13,7 @@ namespace CalculationNode.Extentions
 			get
 			{
 				var host = Dns.GetHostEntry(Dns.GetHostName());
-				foreach (var ip in host.AddressList)
-				{
-					if (ip.AddressFamily == AddressFamily.InterNetwork)
-					{
-						return ip;
-					}
-				}
-				return null;
+				return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 			}
 		}
 
@@ -40,18 +30,9 @@ namespace CalculationNode.Extentions
 
 		public static bool CheckPortAvaliability(int port)
 		{
-			bool isAvailable = true;
-			IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-			TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
-			foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
-			{
-				if (tcpi.LocalEndPoint.Port == port)
-				{
-					isAvailable = false;
-					break;
-				}
-			}
-			return isAvailable;
+			var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+			var tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
+			return tcpConnInfoArray.All(tcpi => tcpi.LocalEndPoint.Port != port);
 		}
 
 		public static Uri TryBuildServerUri(string address)

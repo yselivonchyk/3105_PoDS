@@ -3,6 +3,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using CalculationNode.Extentions;
+using CalculationNode.RicartAgrawala;
 
 namespace CalculationNode
 {
@@ -58,21 +59,14 @@ namespace CalculationNode
 			}
 
 			Parallel.ForEach(PeersData.GetAll(),
-				peer =>
-				{
-					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.SingOff(LocalServerAddress);
-				});
+				peer => PeersData.GetChannel(peer).SingOff(LocalServerAddress));
 			PeersData.Empty();
 		}
 
 		public void Start(int seed)
 		{
 			if (Running)
-			{
-				Console.WriteLine("Start rejected.");
 				return;
-			}
 
 			//ConsoleExtentions.Log("\n\rStart command performed. Seed: " + seed);
 			Parallel.ForEach(PeersData.GetAll(),
@@ -88,13 +82,12 @@ namespace CalculationNode
 		internal void StartSelf(int seed)
 		{
 			if (Running)
-			{
-				Console.WriteLine("Start rejected.");
 				return;
-			}
 
+			Running = true;
 			EventGenerator.Start(this, 2000, 100);
-			ConsoleExtentions.Log("Final value: " + PeersData.CurrentValue);
+			ConsoleExtentions.Log("Final value: " + RicardAgrawalaData.CurrentValue);
+			Running = false;
 		}
 
 		public abstract void Sum(int param);

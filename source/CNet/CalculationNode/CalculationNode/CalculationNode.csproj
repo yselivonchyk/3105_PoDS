@@ -74,6 +74,7 @@
     <Compile Include="PeersData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RicartAgrawala\RicardAgrawalaData.cs" />
     <Compile Include="RicartAgrawala\RicartAgrawalaClient.cs" />
     <Compile Include="RicartAgrawala\RicartAgrawalaServer.cs" />
   </ItemGroup>

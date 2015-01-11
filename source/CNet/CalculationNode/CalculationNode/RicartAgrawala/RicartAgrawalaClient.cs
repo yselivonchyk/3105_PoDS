@@ -66,15 +66,15 @@ namespace CalculationNode.RicartAgrawala
 				IsInterested = true;
 
 				var peers = PeersData.GetAll();
-				var time = PeersData.CurrentTime;
-				Parallel.ForEach(peers.Where(x => x != LocalServerAddress),
+				var time = RicardAgrawalaData.RATimestamp;
+				Parallel.ForEach(peers,
 					peer =>
 					{
 						var siblingProxy = PeersData.GetChannel(peer);
-						Console.WriteLine(peer + " give " +siblingProxy.RecieveAccess(LocalServerAddress, time));
+						var siblingTime = siblingProxy.RecieveAccess(LocalServerAddress, time);
+						RicardAgrawalaData.RATimestamp = siblingTime;
+						Console.WriteLine("{0} is Ok at {1}", peer, siblingTime);
 					});
-				PeersData.AwaitCalculationFlag = true;
-				IsInterested = false;
 
 				Parallel.ForEach(peers,
 					peer =>
@@ -82,6 +82,8 @@ namespace CalculationNode.RicartAgrawala
 						var siblingProxy = PeersData.GetChannel(peer);
 						siblingProxy.DoCalculation(op, param);
 					});
+
+				IsInterested = false;
 			}
 		}
 

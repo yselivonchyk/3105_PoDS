@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using CalculationNode.RicartAgrawala;
 
 namespace CalculationNode
 {
@@ -27,7 +28,7 @@ namespace CalculationNode
 				// termination condition
 				if (watch.ElapsedMilliseconds > sessionLength)
 					return;
-				ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation);
+				ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " t:" + RicardAgrawalaData.ExectTime);
 				
 				switch ((Operations)operation)
 				{
