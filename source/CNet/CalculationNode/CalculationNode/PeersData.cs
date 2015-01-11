@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalculationNode.RicartAgrawala;
 using CookComputing.XmlRpc;
 
 namespace CalculationNode
@@ -14,6 +13,22 @@ namespace CalculationNode
 	{
 		public static Dictionary<String, IRicardAgrawalaProxy> Fellows =
 			new Dictionary<String, IRicardAgrawalaProxy>();
+
+		public static int CurrentValue;
+
+		private static ClientBase localClientBase;
+		public static ClientBase LocalClient
+		{
+			get { return localClientBase; }
+			set
+			{
+				if (localClientBase != null)
+				{
+					Console.WriteLine("we are fucked");
+				}
+				localClientBase = value;
+			}
+		}
 
 		public static void Add(string address)
 		{

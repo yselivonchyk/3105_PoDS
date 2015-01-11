@@ -15,7 +15,7 @@ namespace CalculationNode
 
 		void Sum(int param);
 
-		void Substract(int param);
+		void Subtract(int param);
 
 		void Divide(int param);
 

@@ -49,10 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientBase.cs" />
+    <Compile Include="EventGenerator.cs" />
     <Compile Include="Extentions\ConsoleExtentions.cs" />
     <Compile Include="Extentions\Constants.cs" />
     <Compile Include="Extentions\NetworkExtentions.cs" />
-    <Compile Include="RicartAgrawala\IRicardAgrawalaProxy.cs" />
     <Compile Include="RicartAgrawala\IRicartAgrawalaServer.cs" />
     <Compile Include="IClient.cs" />
     <Compile Include="PeersData.cs" />
