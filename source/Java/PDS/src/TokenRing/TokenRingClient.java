@@ -5,19 +5,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.xmlrpc.XmlRpcException;
 
 import uni_bonn.pds.Client;
 import uni_bonn.pds.RandomOperation;
-import uni_bonn.pds.Client.State;
 
 public class TokenRingClient extends Client implements Runnable {
 	public static URL nextHost;
+	public static boolean started;
 	static Vector<Object> emptyParams = new Vector<>();
 	public static State state;
 	RandomOperation randomOperation;
 	long startTime;
+
+	public static ReentrantLock lock = new ReentrantLock();
+	public static Condition condition = lock.newCondition();
 
 	static URL findNextHost() {
 		URL currentMachineURL;
@@ -43,7 +48,7 @@ public class TokenRingClient extends Client implements Runnable {
 	}
 
 	public TokenRingClient() {
-	//	System.err.println("TokenRingClient constructor");
+		// System.err.println("TokenRingClient constructor");
 		/**********************************************************************************/
 		// config.setServerURL(nextHost);
 		// xmlRpcClient.setConfig(config);
@@ -52,7 +57,7 @@ public class TokenRingClient extends Client implements Runnable {
 
 	@Override
 	public void start(int initValue) {
-		state = State.HELD;
+		started =true;
 		super.start(initValue);
 	}
 
@@ -72,26 +77,32 @@ public class TokenRingClient extends Client implements Runnable {
 	public void run() {
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
-			enterSection();
-			while (state != State.HELD) {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			lock.lock();
+			try {
+				enterSection();
+				while (state != State.HELD) {
+					condition.await();
 				}
+
+				executeForAll("Node.doCalculation",
+						randomOperation.nextOperationAndValue());
+				exitSection();
+
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				lock.unlock();
 			}
-			executeForAll("Node.doCalculation",
-					randomOperation.nextOperationAndValue());
-			exitSection();
 		}
+
 		finalizeSession();
 	}
 
 	public static void sendToken() {
 		try {
 			state = State.RELEASED;
-			System.out.println("Sending token to " + nextHost);
+			System.err.println("Sending token to " + nextHost);
 			config.setServerURL(nextHost);
 			xmlRpcClient.execute("Node.receiveToken", emptyParams);
 			// System.err.println("Token is sent to: "+config.getServerURL());
@@ -104,6 +115,7 @@ public class TokenRingClient extends Client implements Runnable {
 
 	@Override
 	public void finalizeSession() {
+		started =false;
 		TokenRingServer.finished = true;
 		super.finalizeSession();
 	}

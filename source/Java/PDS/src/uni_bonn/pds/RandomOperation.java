@@ -8,7 +8,7 @@ public class RandomOperation {
 	int waitingTimeLimit = 1000;
 	int minimalWaitingTime = 200;
 	int valueLimit = 10;
-	Vector<String> operationAndValue = new Vector<String>();
+	Vector<Object> operationAndValue = new Vector<Object>();
 
 	Random random = new Random();
 	String[] operations = { "sum", "sub", "div", "mul" };
@@ -25,10 +25,10 @@ public class RandomOperation {
 		return (random.nextInt(waitingTimeLimit - minimalWaitingTime) + minimalWaitingTime);
 	}
 
-	public Vector<String> nextOperationAndValue() {
+	public Vector<Object> nextOperationAndValue() {
 		operationAndValue.removeAllElements();
 		operationAndValue.add(this.nextOperation());
-		operationAndValue.add(Integer.toString(this.nextValue()));
+		operationAndValue.add(this.nextValue());
 		return operationAndValue;
 	}
 

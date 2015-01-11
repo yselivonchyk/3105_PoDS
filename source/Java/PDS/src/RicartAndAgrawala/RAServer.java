@@ -1,7 +1,7 @@
 package RicartAndAgrawala;
 
 import java.net.URL;
-import java.util.TreeMap;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import uni_bonn.pds.Client;
@@ -10,8 +10,8 @@ import uni_bonn.pds.Server;
 
 public class RAServer extends Server {
 	static Client client = new Client();
-	public static final LCE logClock = new LCE();
-	private static final TreeMap<String, String> queue = new TreeMap<String, String>();
+	public static volatile LCE logClock = new LCE();
+	private static final LinkedList<String> queue = new LinkedList<String>();
 	public static int numberOfReplies = 0;
 
 	static Vector<String> emptyParams = new Vector<>();
@@ -19,22 +19,32 @@ public class RAServer extends Server {
 	public RAServer() { // Why constructor is called so much?
 	}
 
-	public boolean receiveRequest(String IPandPort, String TimeStamp, String ID) {
-		System.out.println("Request received!");
-		// System.err.println("request " + queue.toString());
-		synchronized (RAClient.request) {
+	@Override
+	public boolean start() {
+		logClock.reset();
+		return super.start();
+	}
 
-			logClock.adjustClocks(Integer.parseInt(TimeStamp));
+	public boolean receiveRequest(String IPandPort, int TimeStamp, int ID) {
+		synchronized (RAClient.state) {
+			System.out.println("Request received!");
+			// System.err.println("request " + queue.toString());
+
+			logClock.adjustClocks(TimeStamp);
 			if ((RAClient.state == State.HELD)
-					|| ((RAClient.state == State.WANTED) && RAClient.request
-							.getTimestampAndID().compareTo(TimeStamp + ID) == -1)) {
-				queue.put(TimeStamp + ID, IPandPort);
+					|| ((RAClient.state == State.WANTED) && (RAClient.request
+							.getTimestampAndID() < (TimeStamp * 10 + ID)))) {
+				synchronized (queue) {
+					queue.add(IPandPort);
+				}
 				System.err.println("Adding request to a queue!");
-				System.out.println("Received: " + TimeStamp + ID
-						+ " Current: " + RAClient.request.getTimestampAndID());
+				System.out.println("Received: " + TimeStamp + ID + " Current: "
+						+ RAClient.request.getTimestampAndID());
 
 				// System.err.println("request " + queue.toString());
 			} else {
+				System.out.println("Received: " + TimeStamp + ID + " Current: "
+						+ RAClient.request.getTimestampAndID());
 				sendOK(IPandPort);
 				// System.err.println(queue.toString());
 			}
@@ -43,39 +53,45 @@ public class RAServer extends Server {
 		return false;
 	}
 
-	public boolean receiveOK() {
+	synchronized public boolean receiveOK() {
 		numberOfReplies += 1;
 		System.out.println("Ok received! " + numberOfReplies + " out of "
 				+ Server.machinesIPs.size());
 		// System.err.println("receiveOK " + queue.toString());
+		if (numberOfReplies == machinesIPs.size())
+			RAClient.state = State.HELD;
+
 		return true;
 	}
 
 	@Override
-	public boolean doCalculation(String operation, String value) {
+	public boolean doCalculation(String operation, int value) {
 		RAServer.logClock.increase();
 		return super.doCalculation(operation, value);
 	}
 
-	public static void sendOK() {
-		logClock.increase();
-		try {
-			while (queue.size() > 0) {
-				String key = queue.firstKey();
-				Client.config.setServerURL(new URL("http://" + queue.get(key)));
-				Client.xmlRpcClient.setConfig(Client.config);
-				Client.xmlRpcClient.execute("Node.receiveOK", emptyParams);
-				queue.remove(key);
+	public static void sendOKToAll() {
+		synchronized (queue) {
+			logClock.increase();
+			try {
+				for (String str : queue) {
+					Client.config.setServerURL(new URL("http://" + str
+							+ "/xmlrpc"));
+					Client.xmlRpcClient.setConfig(Client.config);
+					Client.xmlRpcClient.execute("Node.receiveOK", emptyParams);
+				}
+				queue.clear();
+
+			} catch (Exception e) {
+				System.err.println("Error in sendOK static!");
+				System.err.println(e.getMessage());
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			System.err.println("Error in sendOK static!");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
-	public void sendOK(String IPandPort) {
-		RAServer.logClock.increase();
+	synchronized public void sendOK(String IPandPort) {
+		logClock.increase();
 		// System.err.println("sendOK " + queue.toString());
 		try {
 			System.out.println("Sending OK!");

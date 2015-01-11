@@ -5,25 +5,38 @@ import uni_bonn.pds.Server;
 
 public class TokenRingServer extends Server {
 
-	public static boolean finished = false;
+	public static boolean finished;
 
 	@Override
-	public boolean start(int initValue) {
+	public boolean start() {
+		if (TokenRingClient.started)
+			TokenRingClient.state = State.HELD;
+		else
+			TokenRingClient.state = State.RELEASED;
 		finished = false;
 		TokenRingClient.nextHost = TokenRingClient.findNextHost();
 		System.err.println("NextHost: " + TokenRingClient.nextHost);
-		return super.start(initValue);
+		return super.start();
 	}
 
 	public boolean receiveToken() {
 		System.out.println("Token received!");
+		TokenRingClient.lock.lock();
+
 		if ((TokenRingClient.state == State.RELEASED) && (!finished)) {
 			if (finishedSessions < machinesIPs.size() - 1)
 				TokenRingClient.sendToken();
-			else
+			else {
 				TokenRingClient.state = State.HELD;
-		} else
+				TokenRingClient.condition.signal();
+			}
+		} else {
 			TokenRingClient.state = State.HELD;
+			TokenRingClient.condition.signal();
+		}
+
+		TokenRingClient.lock.unlock();
+
 		return true;
 	}
 

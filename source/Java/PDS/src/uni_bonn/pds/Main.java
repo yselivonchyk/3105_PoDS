@@ -1,11 +1,12 @@
 package uni_bonn.pds;
 
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import org.apache.xmlrpc.XmlRpcException;
+
 import RicartAndAgrawala.RAClient;
 import RicartAndAgrawala.RAServer;
 import TokenRing.TokenRingClient;
@@ -28,44 +29,13 @@ public class Main {
 		// System.setProperty("https.proxyPort", "8888");
 
 		// ========================================================================
-		/***************************************************** For_Testing **************************************************************/
-
-		// String memberIPandPort = "localhost:28600";
-		//
-		// if (algorithmType != 0) {
-		// new RAServer().launch();
-		// client = new RAClient();
-		// if (!standalone) {
-		// client.join(memberIPandPort);
-		// Thread.sleep(2000);
-		// client.start(5);
-		// // RAC.signoff();
-		// }
-		// } else {
-		// new TokenRingServer().launch();
-		// client = new TokenRingClient();
-		// if (!standalone) {
-		// client.join(memberIPandPort);
-		// Thread.sleep(2000);
-		// client.start(5);
-		// // TRC.signoff();
-		// }
-		// }
-		// try {
-		// System.out.println("Your IP:" + InetAddress.getLocalHost()
-		// + "  Port: " + Server.PORT + "  ID: " + LCE.machineID);
-		// } catch (UnknownHostException e) {
-		// System.out.println("Error: " + e.getMessage());
-		// }
-		/***************************************************************************************************/
 
 		System.out
 				.println("******** Principles of Distributed Systems  WS 14/15 ********\n");
-
-		int userDecision = -1;
 		System.out
 				.print("Choose algorithm: 0-Token Ring  1-Ricart and Agrawala \n-> ");
 		algorithmType = reader.nextInt();
+
 		switch (algorithmType) {
 		case 0:
 			new TokenRingServer().launch();
@@ -76,63 +46,19 @@ public class Main {
 		default:
 			System.err.println("Wrong character! Exiting...");
 			System.exit(0);
-			return;
 		}
-
-		try {
-			System.out.println("Node endpoint: "
-					+ InetAddress.getLocalHost().toString().split("/")[1]
-					+ ":" + Server.PORT);
-		} catch (UnknownHostException e) {
-			System.out.println("Error: " + e.getMessage());
-		}
+		reader = null;
+		System.out.println("Node Info:" + Client.currentMachineInfo);
 
 		if (algorithmType == 0)
 			client = new TokenRingClient();
 		else
 			client = new RAClient();
-
-		System.out.print("\n0-Join\n1-Sign off\n2-Standalone mode \n-> ");
-		userDecision = reader.nextInt();
-		switch (userDecision) {
-		case 0:
-			System.out.print("Enter member \"IP:Port\" \n-> ");
-			reader.nextLine();
-			String memberInfo = reader.nextLine();
-			client.join(memberInfo);
-			break;
-		case 1:
-			client.signoff();
-			break;
-		case 2:
-			System.out.println("Waiting to other nodes...");
-			break;
-		default:
-			System.err.println("Wrong character! Exiting...");
-			System.exit(0);
-			return;
-		}
-
-		if (userDecision == 0) {
-			System.out.print("\n0-Sign off\n1-Start\n2-Standalone mode \n-> ");
-			userDecision = reader.nextInt();
-			switch (userDecision) {
-			case 0:
-				client.signoff();
-				break;
-			case 1:
-				System.out.print("Enter initial value -> ");
-				client.start(reader.nextInt());
-				break;
-			case 2:
-				System.out.println("Waiting to other nodes...");
-				break;
-			default:
-				System.err.println("Wrong character! Exiting...");
-				System.exit(0);
-				return;
-			}
-		}
+		Thread inputThread = new Thread(new UserInputReader(client));
+		inputThread.setDaemon(true);
+		inputThread.start();
 
 	}
 }
+
+

@@ -16,9 +16,10 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 60000;
+	public final long SESSION_LENGTH = 20000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
-	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
+	public static String currentMachineInfo = machineIP() + ":" + Server.PORT
+			+ "/xmlrpc";
 	public static XmlRpcClient xmlRpcClient;
 	public static XmlRpcClientConfigImpl config;
 
@@ -27,7 +28,7 @@ public class Client {
 
 	public Client() {
 		config = new XmlRpcClientConfigImpl();
-		System.out.println("Creating XmlRpcClient...");
+		// System.out.println("Creating XmlRpcClient...");
 		xmlRpcClient = new XmlRpcClient();
 	}
 
@@ -39,18 +40,12 @@ public class Client {
 			return null;
 		}
 	}
-	
-	public static URL addressToUrl(String address) throws MalformedURLException{
-		if(!address.contains("http://"))
-			address = "http://" + address + "/xmlrpc";
-		return new URL(address);
-	}
 
 	public void join(String memberIPandPort) {
 
 		System.out.println("Setting URL...");
 		try {
-			config.setServerURL(addressToUrl(memberIPandPort));
+			config.setServerURL(new URL("http://" + memberIPandPort+"/xmlrpc"));
 
 			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
@@ -59,13 +54,13 @@ public class Client {
 			params.add(currentMachineInfo);
 			try {
 				Object res = xmlRpcClient.execute("Node.join", params);
-				
-				Object[] result =  (Object[]) res;
-				
+
+				Object[] result = (Object[]) res;
+
 				for (Object obj : result) {
 					String temp = (String) obj;
 					if (Server.machinesIPs.add(temp))
-						serverURLs.add(addressToUrl(memberIPandPort));
+						serverURLs.add(new URL("http://" + temp));
 				}
 				System.out.println("Successfully connected!\nData received");
 
@@ -85,14 +80,23 @@ public class Client {
 
 	public void signoff() throws XmlRpcException {
 
+		Vector<Object> machineInfo = new Vector<Object>();
+		machineInfo.add(currentMachineInfo);
+
 		/* Telling all machines about leaving */
 		if (serverURLs.size() > 1) {
 			System.out.println("Signing off...");
-			for (URL url : serverURLs) {
+
+			URL[] a = new URL[serverURLs.size()];
+			a = serverURLs.toArray(a);
+
+			for (URL url : a) {
 				config.setServerURL(url);
 				xmlRpcClient.setConfig(config);
-				if (!(boolean) xmlRpcClient.execute("Node.signOff", params)) {
-					System.out.println("Failed to signOff from " + params);
+				if (!(boolean) xmlRpcClient
+						.execute("Node.signOff", machineInfo)) {
+					System.out.println("Failed to signOff from "
+							+ url.getAuthority());
 				}
 			}
 			System.out.println("Signed off!");
@@ -104,13 +108,21 @@ public class Client {
 	}
 
 	public void start(int initValue) {
-		Vector<Object> initialValue = new Vector<Object>();
-		initialValue.add(initValue);
-		executeForAll("Node.start", initialValue);
+
+		if (serverURLs.size() > 1) {
+			Vector<Object> parameters = new Vector<Object>();
+			parameters.add(initValue);
+			executeForAll("Node.setInitValue", parameters);
+
+			parameters.removeAllElements();
+			executeForAll("Node.start", parameters);
+
+		} else
+			System.out.println("You are not connected to network!");
 	}
 
 	/* Function for multicasting */
-	public void executeForAll(String methodName, Vector params) {
+	public void executeForAll(String methodName, Vector<Object> params) {
 
 		for (URL url : serverURLs) {
 			xmlRpcClient.setConfig(null);
@@ -128,6 +140,19 @@ public class Client {
 	public void finalizeSession() {
 		params.removeAllElements();
 		executeForAll("Node.finalizeSession", params);
+	}
+
+	public void printListOfNodes() {
+		if (serverURLs.size() == 1) {
+			System.out.println("This node is not connected to network!");
+			return;
+		}
+
+		System.out.println("There are " + serverURLs.size()
+				+ " network members:");
+		for (URL url : serverURLs) {
+			System.out.println(url.getAuthority());
+		}
 	}
 
 }

@@ -20,7 +20,7 @@ import TokenRing.TokenRingServer;
 
 public class Server {
 
-	public static long processingValue = 0;
+	public volatile static long processingValue = 0;
 	public static final int PORT = findFreePort();
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
@@ -73,7 +73,7 @@ public class Server {
 	/******************************************** Server functions ***************************************************************/
 
 	/* Joins to network via network member Ip and Port */
-	public ArrayList<String> join(String newMemberIPandPort) {
+	public Object[] join(String newMemberIPandPort) {
 		try {
 			if (machinesIPs.add(newMemberIPandPort)) {
 				Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
@@ -84,21 +84,19 @@ public class Server {
 			System.err.println("Wrong new member IP and port!");
 			System.err.println(e.getMessage());
 		}
-		ArrayList<String> ips = new ArrayList<String>();
-		for (String str : machinesIPs) {
-			ips.add(str);
-		}
+		return machinesIPs.toArray();
+	}
 
-		return ips;
+	public boolean setInitValue(int initValue) {
+		processingValue = initValue;
+		return true;
 	}
 
 	/* Receive initial value and start algorithm */
-	public boolean start(int initValue) {
-		
-		finishedSessions=0;
-		
-		System.out.println("Start calculations!");
-		processingValue = initValue;
+	public boolean start() {
+		finishedSessions = 0;
+		System.out.println("Start calculations! InitialValue = "
+				+ processingValue);
 		if (Main.algorithmType == 0) {
 			System.out.println("Starting TokenRing algorithm...");
 			new Thread(new TokenRingClient()).start();
@@ -114,43 +112,53 @@ public class Server {
 
 		if (machinesIPs.remove(leavingMachine)) {
 			System.out.println("Machine " + leavingMachine + " left network!");
+
+			for (int i = 0; i < Client.serverURLs.size(); i++) {
+				URL url = Client.serverURLs.get(i);
+				String str = url.getAuthority() + url.getFile();
+				if (str.compareTo(leavingMachine) == 0)
+					Client.serverURLs.remove(i);
+			}
+
+			// System.out.println("MachinesIPS.size " + machinesIPs.size()
+			// + " ServerURLs.size " + Client.serverURLs.size());
 			return true;
 		}
-		// TODO delete from serverURLs
+
 		return false;
 	}
 
-	public boolean doCalculation(String operation, String value) {
-		int intValue = Integer.parseInt(value);
+	public boolean doCalculation(String operation, int value) {
+		// int intValue = Integer.parseInt(value);
 		switch (operation) {
 		case "sum":
-			processingValue += intValue;
+			processingValue += value;
 			break;
 		case "div":
-			processingValue /= intValue;
+			processingValue /= value;
 			break;
 		case "sub":
-			processingValue -= intValue;
+			processingValue -= value;
 			break;
 		case "mul":
-			processingValue *= intValue;
+			processingValue *= value;
 			break;
 		default:
 			System.err.println("Unknown operation in doCalculation!");
 			return false;
 		}
 		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value + "  PROCESSING_VALUE: " + processingValue+"\n");
+				+ value + "  PROCESSING_VALUE: " + processingValue + "\n");
 		return true;
 	}
 
-	public static int finishedSessions = 0;
+	public static int finishedSessions;
 
 	public boolean finalizeSession() {
 		finishedSessions++;
-		System.out.println("FINISHED RECEIVED! Machines: " + finishedSessions);
-		if (finishedSessions == machinesIPs.size()) {
-			System.out.println("Session Ended! FINAL RESULT: "
+		System.out.println("Finished received! Machines: " + finishedSessions);
+		if (finishedSessions >= machinesIPs.size()) {
+			System.out.println("SESSION ENDED! FINAL RESULT: "
 					+ processingValue);
 		}
 		return true;

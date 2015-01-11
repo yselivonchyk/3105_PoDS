@@ -20,35 +20,21 @@ public class RAClient extends Client implements Runnable {
 	@Override
 	public void join(String memberIPandPort) {
 		super.join(memberIPandPort);
-		LCE.machineID = this.serverURLs.size();
+		LCE.machineID = Client.serverURLs.size();
 	}
 
-	public void enterSection() throws InterruptedException {
+	synchronized public void enterSection() throws InterruptedException {
 		System.out.println("Entering critical area!");
-
 		RAServer.numberOfReplies = 0;
 		state = State.WANTED;
 		request.modify(logClock.getCurrentTimeStamp());
-		this.executeForAll("Server.receiveRequest", request.getParams());
-
-		// Waiting OKs from others
-		while (RAServer.numberOfReplies < serverURLs.size()) {
-			Thread.sleep(200);
-		}
-		state = State.HELD;
-
-		System.err.println("Access to critical area obtained!");
-		// System.err.println(RAServer.queue.toString());
-		/** Do calculations on all machines */
-		this.executeForAll("Node.doCalculation",
-				randomOperation.nextOperationAndValue());
-
+		this.executeForAll("Node.receiveRequest", request.getParams());
 	}
 
-	public void exitSection() {
+	synchronized public void exitSection() {
 		System.out.println("Exiting critical area!");
 		state = State.RELEASED;
-		RAServer.sendOK();
+		RAServer.sendOKToAll();
 	}
 
 	@Override
@@ -57,8 +43,16 @@ public class RAClient extends Client implements Runnable {
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
 
 			try {
-				Thread.sleep(randomOperation.getRandomWaitingTime());
 				enterSection();
+
+				while (state != State.HELD) {
+					Thread.sleep(200);
+				}
+				System.err.println("Access to critical area obtained!");
+				// System.err.println(RAServer.queue.toString());
+				/** Do calculations on all machines */
+				this.executeForAll("Node.doCalculation",
+						randomOperation.nextOperationAndValue());
 				exitSection();
 			} catch (InterruptedException e) {
 				System.err.println(e.getMessage());
