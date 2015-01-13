@@ -23,7 +23,7 @@ public class RAClient extends Client implements Runnable {
 		LCE.machineID = Client.serverURLs.size();
 	}
 
-	 public void enterSection() throws InterruptedException {
+	synchronized public void enterSection() throws InterruptedException {
 		System.out.println("Entering critical area!");
 		RAServer.numberOfReplies = 0;
 		state = State.WANTED;
@@ -31,14 +31,14 @@ public class RAClient extends Client implements Runnable {
 		this.executeForAll("Node.receiveRequest", request.getParams());
 	}
 
-	 public void exitSection() {
+	synchronized public void exitSection() {
 		System.out.println("Exiting critical area!");
 		state = State.RELEASED;
 		RAServer.sendOKToAll();
 	}
 
 	@Override
-	 public void run() {
+	public void run() {
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
 

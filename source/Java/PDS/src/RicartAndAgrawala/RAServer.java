@@ -12,7 +12,7 @@ public class RAServer extends Server {
 	static Client client = new Client();
 	public static volatile LCE logClock = new LCE();
 	private static final LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>();
-	public static int numberOfReplies = 0;
+	public volatile static int numberOfReplies = 0;
 
 	static Vector<String> emptyParams = new Vector<>();
 
@@ -25,7 +25,8 @@ public class RAServer extends Server {
 		return super.start();
 	}
 
-	public boolean receiveRequest(String IPandPort, int TimeStamp, int ID) {
+	synchronized public boolean receiveRequest(String IPandPort, int TimeStamp,
+			int ID) {
 
 		System.out.println("Request received!");
 		// System.err.println("request " + queue.toString());
@@ -38,7 +39,7 @@ public class RAServer extends Server {
 				queue.add(IPandPort);
 			}
 			System.err.println("Adding request to a queue!");
-			System.out.println("Received: " + TimeStamp + ID + " Current: "
+			System.out.println("Received: " + (TimeStamp + ID) + " Current: "
 					+ RAClient.request.getTimestampAndID());
 
 			// System.err.println("request " + queue.toString());
@@ -53,12 +54,12 @@ public class RAServer extends Server {
 		return false;
 	}
 
-	public boolean receiveOK() {
+	synchronized public boolean receiveOK() {
 		numberOfReplies += 1;
 		System.out.println("Ok received! " + numberOfReplies + " out of "
 				+ Server.machinesIPs.size());
 		// System.err.println("receiveOK " + queue.toString());
-		if (numberOfReplies == machinesIPs.size())
+		if (numberOfReplies >= machinesIPs.size())
 			RAClient.state = State.HELD;
 
 		return true;
@@ -70,7 +71,7 @@ public class RAServer extends Server {
 		return super.doCalculation(operation, value);
 	}
 
-	public static void sendOKToAll() {
+	synchronized public static void sendOKToAll() {
 
 		logClock.increase();
 		try {
@@ -90,7 +91,7 @@ public class RAServer extends Server {
 
 	}
 
-	public void sendOK(String IPandPort) {
+	synchronized public void sendOK(String IPandPort) {
 		logClock.increase();
 		// System.err.println("sendOK " + queue.toString());
 		try {

@@ -44,8 +44,10 @@ public class Main {
 		}
 		reader = null;
 		System.out.println("Node Info:" + Client.currentMachineInfo);
-
-		client = new Client();
+		if (algorithm == 0)
+			client = new TokenRingClient();
+		else
+			client = new RAClient();
 		Thread inputThread = new Thread(new UserInputReader(client));
 		inputThread.setDaemon(true);
 		inputThread.start();
