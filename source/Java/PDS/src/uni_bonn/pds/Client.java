@@ -18,8 +18,7 @@ public class Client {
 
 	public final long SESSION_LENGTH = 20000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
-	public static String currentMachineInfo = machineIP() + ":" + Server.PORT
-			+ "/xmlrpc";
+	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
 	public static XmlRpcClient xmlRpcClient;
 	public static XmlRpcClientConfigImpl config;
 
@@ -45,7 +44,7 @@ public class Client {
 
 		System.out.println("Setting URL...");
 		try {
-			config.setServerURL(new URL("http://" + memberIPandPort+"/xmlrpc"));
+			config.setServerURL(addressToUrl(memberIPandPort));
 
 			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
@@ -60,7 +59,7 @@ public class Client {
 				for (Object obj : result) {
 					String temp = (String) obj;
 					if (Server.machinesIPs.add(temp))
-						serverURLs.add(new URL("http://" + temp));
+						serverURLs.add(addressToUrl(temp));
 				}
 				System.out.println("Successfully connected!\nData received");
 
@@ -147,12 +146,15 @@ public class Client {
 			System.out.println("This node is not connected to network!");
 			return;
 		}
-
 		System.out.println("There are " + serverURLs.size()
 				+ " network members:");
 		for (URL url : serverURLs) {
 			System.out.println(url.getAuthority());
 		}
+	}
+
+	public static URL addressToUrl(String address) throws MalformedURLException {
+		return new URL("http://".concat(address).concat("/xmlrpc"));
 	}
 
 }

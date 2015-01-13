@@ -5,8 +5,8 @@ import uni_bonn.pds.RandomOperation;
 
 public class RAClient extends Client implements Runnable {
 
-	public static Request request;
-	public static State state;
+	public volatile static Request request;
+	public volatile static State state;
 	RandomOperation randomOperation;
 	LCE logClock = RAServer.logClock;
 	long startTime;
@@ -23,7 +23,7 @@ public class RAClient extends Client implements Runnable {
 		LCE.machineID = Client.serverURLs.size();
 	}
 
-	synchronized public void enterSection() throws InterruptedException {
+	 public void enterSection() throws InterruptedException {
 		System.out.println("Entering critical area!");
 		RAServer.numberOfReplies = 0;
 		state = State.WANTED;
@@ -31,14 +31,14 @@ public class RAClient extends Client implements Runnable {
 		this.executeForAll("Node.receiveRequest", request.getParams());
 	}
 
-	synchronized public void exitSection() {
+	 public void exitSection() {
 		System.out.println("Exiting critical area!");
 		state = State.RELEASED;
 		RAServer.sendOKToAll();
 	}
 
 	@Override
-	public void run() {
+	 public void run() {
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
 

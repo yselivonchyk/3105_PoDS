@@ -1,12 +1,7 @@
 package uni_bonn.pds;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Scanner;
-
 import org.apache.xmlrpc.XmlRpcException;
-
 import RicartAndAgrawala.RAClient;
 import RicartAndAgrawala.RAServer;
 import TokenRing.TokenRingClient;
@@ -14,7 +9,7 @@ import TokenRing.TokenRingServer;
 
 public class Main {
 
-	public static int algorithmType = 1; // 1-R&A 0-TokenRing
+	public static int algorithm = 1; // 1-R&A 0-TokenRing
 	public static Client client;
 
 	public static void main(String[] args) throws InterruptedException,
@@ -34,9 +29,9 @@ public class Main {
 				.println("******** Principles of Distributed Systems  WS 14/15 ********\n");
 		System.out
 				.print("Choose algorithm: 0-Token Ring  1-Ricart and Agrawala \n-> ");
-		algorithmType = reader.nextInt();
+		algorithm = reader.nextInt();
 
-		switch (algorithmType) {
+		switch (algorithm) {
 		case 0:
 			new TokenRingServer().launch();
 			break;
@@ -50,15 +45,10 @@ public class Main {
 		reader = null;
 		System.out.println("Node Info:" + Client.currentMachineInfo);
 
-		if (algorithmType == 0)
-			client = new TokenRingClient();
-		else
-			client = new RAClient();
+		client = new Client();
 		Thread inputThread = new Thread(new UserInputReader(client));
 		inputThread.setDaemon(true);
 		inputThread.start();
 
 	}
 }
-
-

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -29,8 +28,8 @@ public class Server {
 		/* Putting current machine on the list */
 		try {
 			machinesIPs.add(Client.currentMachineInfo);
-			Client.serverURLs
-					.add(new URL("http://" + Client.currentMachineInfo));
+			Client.serverURLs.add(Client
+					.addressToUrl(Client.currentMachineInfo));
 
 		} catch (MalformedURLException e1) {
 			System.err.println(e1.getMessage());
@@ -47,7 +46,7 @@ public class Server {
 
 		// System.out.println("Adding handlers...");
 		try {
-			if (Main.algorithmType == 0)
+			if (Main.algorithm == 0)
 				phm.addHandler("Node", TokenRingServer.class);
 			else
 				phm.addHandler("Node", RAServer.class);
@@ -76,7 +75,7 @@ public class Server {
 	public Object[] join(String newMemberIPandPort) {
 		try {
 			if (machinesIPs.add(newMemberIPandPort)) {
-				Client.serverURLs.add(new URL("http://" + newMemberIPandPort));
+				Client.serverURLs.add(Client.addressToUrl(newMemberIPandPort));
 				System.out.println("Client is connected!");
 				System.out.println("IP:Port=" + newMemberIPandPort);
 			}
@@ -97,7 +96,7 @@ public class Server {
 		finishedSessions = 0;
 		System.out.println("Start calculations! InitialValue = "
 				+ processingValue);
-		if (Main.algorithmType == 0) {
+		if (Main.algorithm == 0) {
 			System.out.println("Starting TokenRing algorithm...");
 			new Thread(new TokenRingClient()).start();
 		} else {
@@ -115,7 +114,7 @@ public class Server {
 
 			for (int i = 0; i < Client.serverURLs.size(); i++) {
 				URL url = Client.serverURLs.get(i);
-				String str = url.getAuthority() + url.getFile();
+				String str = url.getAuthority();
 				if (str.compareTo(leavingMachine) == 0)
 					Client.serverURLs.remove(i);
 			}
