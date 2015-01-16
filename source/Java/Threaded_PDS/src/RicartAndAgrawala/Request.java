@@ -12,25 +12,32 @@ public class Request {
 
 	public Request() {
 		this.nodeInfo = RAClient.currentMachineInfo;
-		nodeID = LCE.machineID;
+		this.nodeID = LCE.machineID;
 
-		params.add(nodeInfo);
-		params.add(0);
-		params.add(nodeID);
+		this.params.add(nodeInfo);
+		this.params.add(0);
+		this.params.add(nodeID);
 	}
 
 	public Vector<Object> getParams() {
-		params.set(1, currentTimeStamp);
-		return params;
+		this.params.set(1, currentTimeStamp);
+		return this.params;
+	}
+
+	public int getTimestamp() {
+		return this.currentTimeStamp;
+	}
+
+	public int getNodeID() {
+		return this.nodeID;
 	}
 
 	public int getTimestampAndID() {
-		return (currentTimeStamp * 10 + nodeID);
+		return this.currentTimeStamp * 10 + nodeID;
 	}
 
 	public void modify(int currentTimeStamp) {
 		this.currentTimeStamp = currentTimeStamp;
-
 	}
 
 }
