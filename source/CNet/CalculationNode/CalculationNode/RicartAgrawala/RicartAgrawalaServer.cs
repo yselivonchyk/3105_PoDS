@@ -142,6 +142,11 @@ namespace CalculationNode
 			}
 		}
 
+		public void EspaciallyForElchyn()
+		{
+			Console.WriteLine("It is, so called, required finalization!");
+		}
+
 		private bool HasPriority(int remoteTime, int remoteID)
 		{
 //			Console.WriteLine("l: {0} \tr: {1} \tlid: {2} \trid: {3}",

@@ -29,6 +29,9 @@ namespace CalculationNode
 		[XmlRpcMethod("Node.receiveRequest")]
 		bool RecieveAccess(String address, int time, int id);
 
+		[XmlRpcMethod("Node.finalizeSession")]
+		void EspaciallyForElchyn();
+
 		//[XmlRpcMethod( "Server.sum")]
 		//bool Sum(int param);
 
