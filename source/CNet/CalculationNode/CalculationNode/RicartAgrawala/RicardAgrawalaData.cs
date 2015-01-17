@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CookComputing.XmlRpc;
 
 namespace CalculationNode.RicartAgrawala
 {
@@ -31,6 +28,18 @@ namespace CalculationNode.RicartAgrawala
 			}
 		}
 
+		private static bool _isInterested;
+		public static bool IsInterested
+		{
+			get { return _isInterested; }
+			set
+			{
+				RequestTime = RATimestamp;
+				_isInterested = value;
+			}
+		}
+
+		public static int RequestTime;
 
 		static RicardAgrawalaData()
 		{
@@ -48,9 +57,11 @@ namespace CalculationNode.RicartAgrawala
 				Queue = Queue.OrderBy(x => x.Time).ThenBy(x => x.Address).ToList();
 
 				//debug
-				if (Queue.Count() > 1)
-					foreach (var calculationRequest in Queue.ToList())
-						Console.WriteLine(calculationRequest.Time + " " + calculationRequest.Address);
+				if (Queue.Count() <= 1) return;
+				Console.WriteLine("\r\n Local time: {0}, Is interested: {1} at {2}", 
+					ExectTime, IsInterested, RequestTime);
+				foreach (var calculationRequest in Queue.ToList())
+					Console.WriteLine(calculationRequest.Time + " " + calculationRequest.Address);
 			}
 		}
 
@@ -63,6 +74,10 @@ namespace CalculationNode.RicartAgrawala
 			}
 		}
 
+		public static int GetQueueCount()
+		{
+			return Queue.Count;
+		}
 
 		#endregion Request Queue
 	}

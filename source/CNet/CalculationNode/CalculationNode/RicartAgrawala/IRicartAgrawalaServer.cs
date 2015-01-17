@@ -14,14 +14,20 @@ namespace CalculationNode
 		[XmlRpcMethod( "Node.singOff")]
 		bool SingOff(string address);
 
+		[XmlRpcMethod("Node.setInitValue")]
+        bool Init(int seed);
+
 		[XmlRpcMethod("Node.start")]
-        bool Start(int seed);
+		bool Start();
 
 		[XmlRpcMethod("Node.doCalculation")]
 		bool DoCalculation(String operation, int value);
 
+//		[XmlRpcMethod("Node.doTestCalc")]
+//		bool DoCalculation(String operation, int value, int final);
+
 		[XmlRpcMethod("Node.receiveRequest")]
-		int RecieveAccess(String address, int time);
+		bool RecieveAccess(String address, int time, int id);
 
 		//[XmlRpcMethod( "Server.sum")]
 		//bool Sum(int param);

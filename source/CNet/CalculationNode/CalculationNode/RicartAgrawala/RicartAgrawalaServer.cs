@@ -21,6 +21,7 @@ namespace CalculationNode
 
 		public Object[] Join(string address)
 		{
+			ConsoleExtentions.Regresh();
 			ConsoleExtentions.Log("Join: " + address);
 			PeersData.Add(address);
 			return PeersData.GetAll().Select(x => (Object)x).ToArray();
@@ -33,17 +34,33 @@ namespace CalculationNode
 			return true;
 		}
 
-		public bool Start(int seed)
+		/// <summary>
+		/// Split of start into two methods due to Java limitations
+		/// </summary>
+		/// <param name="seed"></param>
+		/// <returns></returns>
+		public bool Init(int seed)
 		{
-			ConsoleExtentions.Log("Server start recieved: " + seed);
+			//Console.Clear();
+			ConsoleExtentions.Log("Server init recieved: " + seed);
+			PeersData.Calculations = 0;
 			CurrentValue = seed;
-			PeersData.LocalClient.StartSelf(seed);
+			return true;
+		}
+
+		public bool Start()
+		{
+			ConsoleExtentions.Log("Server start recieved");
+			var t = new Thread(x => PeersData.LocalClient.StartSelf(CurrentValue));
+			t.Start();
 			return true;
 		}
 
 		public bool DoCalculation(string operation, int value)
 		{
+			PeersData.Calculations++;
 			var original = CurrentValue;
+			Console.WriteLine("Lock reached");
 			switch (operation)
 			{
 				case "sum":
@@ -67,15 +84,28 @@ namespace CalculationNode
 			return true;
 		}
 
+		public bool DoCalculation(string operation, int value, int final)
+		{
+			var initial = RicardAgrawalaData.CurrentValue;
+			DoCalculation(operation, value);
+			if (final == initial)
+				return true;
+			else
+			{
+				Console.WriteLine("I have done something wrong :(  my: {0} - {1} : expected", initial, final);
+				Thread.Sleep(1000);
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Controll access to critical section giving one positive responce at a time
 		/// </summary>
 		/// <param name="address"></param>
 		/// <param name="time"></param>
 		/// <returns>current timestemp</returns>
-		public int RecieveAccess(string address, int time)
+		public bool RecieveAccess(string address, int time, int id)
 		{
-			var localTime = RicardAgrawalaData.ExectTime;
 			RicardAgrawalaData.RATimestamp = time;
 			// create request object
 			var request = new CalculationRequest
@@ -92,24 +122,38 @@ namespace CalculationNode
 			{
 				lock (RicardAgrawalaData.QueueLock)
 				{
-					if (client.LocalServerAddress == address || !client.IsInterested 
-						|| HasPriority(address, time, client.LocalServerAddress, localTime))
+					if (!ClientBase.Running)
+					{
+						Console.WriteLine("NOT STARTED YET");
+						Thread.Sleep(1000);
+						continue;
+					}
+					if (client.LocalServerAddress == address 
+						|| !RicardAgrawalaData.IsInterested 
+						|| HasPriority(time, id))
 					{
 						RicardAgrawalaData.PopRequest(request);
-						return RicardAgrawalaData.RATimestamp;
+						Console.WriteLine("I am good with {0} {1} {2}", address, time, id);
+						//return RicardAgrawalaData.ExectTime;
+						return true;
 					}
 				}
-				Thread.Yield();
+				Thread.Sleep(5);
 			}
 		}
 
-		private bool HasPriority(string remoteAddress, int remoteTime, string localAddress, int localTime)
+		private bool HasPriority(int remoteTime, int remoteID)
 		{
-			if (localTime > remoteTime)
+//			Console.WriteLine("l: {0} \tr: {1} \tlid: {2} \trid: {3}",
+//				RicardAgrawalaData.RequestTime,
+//				remoteTime,
+//				PeersData.ID,
+//				remoteID);
+			if (RicardAgrawalaData.RequestTime > remoteTime)
 				return true;
-			if(localTime < remoteTime)
+			if (RicardAgrawalaData.RequestTime < remoteTime)
 				return false;
-			return String.Compare(localAddress, remoteAddress, StringComparison.InvariantCulture) > 0;
+			return remoteID < PeersData.ID;
 		}
 	}
 }

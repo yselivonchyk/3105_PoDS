@@ -10,8 +10,7 @@ namespace CalculationNode
 	    private static RicartAgrawalaClient ricartAgrawalaClient;
         static void Main(string[] args)
         {
-			Console.WriteLine("app " + AppDomain.CurrentDomain.GetHashCode() + "\n\r");
-			Console.WriteLine(AppDomain.CurrentDomain.FriendlyName + "\n\r");
+			ConsoleExtentions.Regresh();
             // Prepare params
             var localIP = NetworkExtentions.GetLocalIP;
 			var localPort = NetworkExtentions.CheckPortAvaliability(Constants.DefaultRicartServerPort)
@@ -26,7 +25,7 @@ namespace CalculationNode
 
 			// Build server URL address
 	        var baseAddress = NetworkExtentions.BuildServerUri(localIP.ToString(), localPort, Constants.DefaultRelativePath);
-
+	        Console.Title = baseAddress.ToString();
 			ricartAgrawalaClient = new RicartAgrawalaClient(baseAddress);
 			ricartAgrawalaClient.Join(fellowAddress);
 
@@ -38,13 +37,6 @@ namespace CalculationNode
 
 	    private static void RunInputLoop()
 	    {
-			Console.WriteLine("\nPress key to indicate desired operation:");
-			Console.WriteLine("Enter - start command");
-			Console.WriteLine("1 - Join command");
-			Console.WriteLine("2 - Sign off command");
-			Console.WriteLine("3 - Start");
-			Console.WriteLine("9 - List peers");
-			Console.WriteLine("Esc - exit");
 		    while (true)
 		    {
 				switch (Console.ReadKey().Key)

@@ -12,9 +12,12 @@ namespace CalculationNode
 	public static class PeersData
 	{
 		public static ClientBase LocalClient { get; set; }
+		public static int Calculations { get; set; }
 
 		internal static Dictionary<String, IRicardAgrawalaProxy> Fellows =
 			new Dictionary<String, IRicardAgrawalaProxy>();
+
+		public static int ID;
 
 		public static void Add(string address)
 		{
@@ -42,6 +45,12 @@ namespace CalculationNode
 
 		public static IRicardAgrawalaProxy GetChannel(string address)
 		{
+			if (!Fellows.ContainsKey(address))
+			{
+				Console.WriteLine("Warning: {0}", address);
+				foreach (var fellow in Fellows)
+					Console.WriteLine(fellow);
+			}
 			return Fellows[address];
 		}
 

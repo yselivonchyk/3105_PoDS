@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.ServiceModel;
+using System.Threading;
 using System.Threading.Tasks;
 using CalculationNode.Extentions;
 using CalculationNode.RicartAgrawala;
@@ -12,7 +13,7 @@ namespace CalculationNode
 		protected Uri BaseServerUri;
 		protected ServiceHost HostObject;
 		internal string LocalServerAddress;
-		private bool Running { get; set; }
+		public static bool Running { get; private set; }
 
 		protected ClientBase(Uri baseServerUri)
 		{
@@ -27,6 +28,8 @@ namespace CalculationNode
 				JoinSingle(new Uri(LocalServerAddress));
 			// save information about known node
 			var peers = JoinSingle(knownNodeUri).Select(NetworkExtentions.TryBuildServerUri);
+			PeersData.ID = peers.Count();
+			Console.WriteLine("Local ID: {0}", PeersData.ID);
 			var undiscoveredNodesAddresses = peers
 				.Where(x => knownNodeUri != x && LocalServerAddress != x.ToString());
 			// Make parallel non-blocking call to all other nodes
@@ -42,7 +45,8 @@ namespace CalculationNode
 			var siblingProxy = PeersData.GetChannel(nodeAddress.ToString());
 
 			var joinResponse = siblingProxy.Join(LocalServerAddress);
-			ConsoleExtentions.Log(String.Format("Got response with {0} items from {1}",
+			ConsoleExtentions.Log(
+				String.Format("Got response with {0} items from {1}",
 				joinResponse.Length,
 				nodeAddress));
 			return joinResponse.Select(x => x.ToString()).ToArray();
@@ -72,11 +76,21 @@ namespace CalculationNode
 			Parallel.ForEach(PeersData.GetAll(),
 				peer =>
 				{
-					var se = (new Random().Next(10, 20));
-					Console.WriteLine("Send: " + se);
+					Console.WriteLine("Send init request: {0} - {1} ", seed, peer);
 					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.Start(se);
+					siblingProxy.Init(seed);
+					Console.WriteLine("Finish init request: {0} - {1} ", seed, peer);
 				});
+
+			Parallel.ForEach(PeersData.GetAll(),
+				peer =>
+				{
+					Console.WriteLine("Send start request: {0} - {1} ", seed, peer);
+					var siblingProxy = PeersData.GetChannel(peer);
+					siblingProxy.Start();
+					Console.WriteLine("Finish start request: {0} - {1} ", seed, peer);
+				});
+			Console.WriteLine("\r\n\r\n");
 		}
 
 		internal void StartSelf(int seed)
@@ -86,7 +100,18 @@ namespace CalculationNode
 
 			Running = true;
 			EventGenerator.Start(this, 2000, 100);
-			ConsoleExtentions.Log("Final value: " + RicardAgrawalaData.CurrentValue);
+			// Wait for the late requests from peers.
+			
+			Thread.Sleep(2000);
+			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}", 
+				RicardAgrawalaData.CurrentValue,
+				PeersData.Calculations));
+			while (RicardAgrawalaData.GetQueueCount() != 0)
+			{
+				Console.WriteLine("Wait for queue");
+				Thread.Sleep(100);
+			}
+				
 			Running = false;
 		}
 
