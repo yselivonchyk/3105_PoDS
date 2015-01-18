@@ -34,7 +34,6 @@ public class UserInputReader implements Runnable {
 				System.err.println(e.getMessage());
 			}
 		}
-
 	}
 
 	private void userChoiceSwitcher(String userDecision) throws IOException,
@@ -71,7 +70,6 @@ public class UserInputReader implements Runnable {
 			client.signoff();
 			System.exit(0);
 			break;
-
 		default:
 			System.err
 					.println("Unknown command! Type \"help\" for commands list");

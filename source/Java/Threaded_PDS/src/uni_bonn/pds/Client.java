@@ -16,7 +16,7 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 120000;
+	public final long SESSION_LENGTH = 20000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
 	public static XmlRpcClient xmlRpcClient;
@@ -27,7 +27,6 @@ public class Client {
 
 	public Client() {
 		config = new XmlRpcClientConfigImpl();
-		// System.out.println("Creating XmlRpcClient...");
 		xmlRpcClient = new XmlRpcClient();
 	}
 
@@ -45,17 +44,13 @@ public class Client {
 		System.out.println("Setting URL...");
 		try {
 			config.setServerURL(addressToUrl(memberIPandPort));
-
 			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
-
 			params.removeAllElements();
 			params.add(currentMachineInfo);
 			try {
 				Object res = xmlRpcClient.execute("Node.join", params);
-
 				Object[] result = (Object[]) res;
-
 				for (Object obj : result) {
 					String temp = (String) obj;
 					if (Server.machinesIPs.add(temp))
@@ -78,7 +73,6 @@ public class Client {
 	}
 
 	public void signoff() throws XmlRpcException {
-
 		Vector<Object> machineInfo = new Vector<Object>();
 		machineInfo.add(currentMachineInfo);
 
@@ -100,7 +94,6 @@ public class Client {
 			}
 			System.out.println("Signed off!");
 		}
-
 		else {
 			System.out.println("You are not connected to network!");
 		}

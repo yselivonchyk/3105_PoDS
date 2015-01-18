@@ -6,6 +6,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -21,6 +23,9 @@ public class RAClient extends Client implements Runnable {
 	RandomOperation randomOperation;
 	LCE logClock = RAServer.logClock;
 	long startTime;
+
+	public volatile static ReentrantLock lock = new ReentrantLock(true);
+	public volatile static Condition condition = lock.newCondition();
 
 	ExecutorService pool;
 	LinkedList<Future<Boolean>> oKs = new LinkedList<Future<Boolean>>();
@@ -38,12 +43,12 @@ public class RAClient extends Client implements Runnable {
 		LCE.machineID = Client.serverURLs.size();
 	}
 
-	public synchronized void enterSection() {
+	public void enterSection() {
 		System.out.println("Entering critical area!");
-
+		lock.lock();
 		state = State.WANTED;
-
 		request.modify(logClock.getCurrentTimeStamp());
+		lock.unlock();
 
 		for (URL url : serverURLs)
 			oKs.add(pool.submit(new RequestSender(url, request)));
@@ -55,13 +60,18 @@ public class RAClient extends Client implements Runnable {
 			}
 		}
 		oKs.clear();
-
+		lock.lock();
 		state = State.HELD;
+		lock.unlock();
 	}
 
 	synchronized public void exitSection() {
 		System.out.println("Exiting critical area!");
+		lock.lock();
 		state = State.RELEASED;
+		condition.signalAll();
+		lock.unlock();
+
 	}
 
 	@Override

@@ -6,21 +6,18 @@ public class Request {
 	/** currentMachineInfo,TimeStamp,machineID,operation, Value */
 	private Vector<Object> params = new Vector<Object>(3);
 
-	String nodeInfo;
 	int nodeID;
 	int currentTimeStamp;
 
 	public Request() {
-		this.nodeInfo = RAClient.currentMachineInfo;
 		this.nodeID = LCE.machineID;
-
-		this.params.add(nodeInfo);
+		
 		this.params.add(0);
 		this.params.add(nodeID);
 	}
 
 	public Vector<Object> getParams() {
-		this.params.set(1, currentTimeStamp);
+		this.params.set(0, currentTimeStamp);
 		return this.params;
 	}
 

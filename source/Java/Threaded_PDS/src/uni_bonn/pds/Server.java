@@ -21,6 +21,8 @@ public class Server {
 
 	public volatile static long processingValue = 0;
 	public static final int PORT = findFreePort();
+
+	// Holds IPs of network nodes
 	public static HashSet<String> machinesIPs = new HashSet<String>();
 
 	/* Creates WebServer and starts it */
@@ -44,7 +46,7 @@ public class Server {
 		// System.out.println("Creating PropertyHandlerMapping...");
 		PropertyHandlerMapping phm = new PropertyHandlerMapping();
 
-		// System.out.println("Adding handlers...");
+		// Adding handlers according chosen algorithm
 		try {
 			if (Main.algorithm == 0)
 				phm.addHandler("Node", TokenRingServer.class);
@@ -74,7 +76,10 @@ public class Server {
 	/* Joins to network via network member Ip and Port */
 	public Object[] join(String newMemberIPandPort) {
 		try {
-			if (machinesIPs.add(newMemberIPandPort)) {
+			if (machinesIPs.add(newMemberIPandPort))
+			// Checking if node is new and adding to set
+			{
+				// Adding node to url list
 				Client.serverURLs.add(Client.addressToUrl(newMemberIPandPort));
 				System.out.println("Client is connected!");
 				System.out.println("IP:Port=" + newMemberIPandPort);
@@ -83,7 +88,7 @@ public class Server {
 			System.err.println("Wrong new member IP and port!");
 			System.err.println(e.getMessage());
 		}
-		return machinesIPs.toArray();
+		return machinesIPs.toArray(); // sending array of known nodes
 	}
 
 	public boolean setInitValue(int initValue) {

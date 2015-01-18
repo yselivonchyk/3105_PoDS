@@ -18,7 +18,7 @@ public class TokenRingClient extends Client implements Runnable {
 	public static boolean started;
 	static Vector<Object> emptyParams = new Vector<>();
 	public static State state;
-	RandomOperation randomOperation;
+	RandomOperation randomOperation = new RandomOperation();
 	long startTime;
 
 	public static ReentrantLock lock = new ReentrantLock();
@@ -44,14 +44,6 @@ public class TokenRingClient extends Client implements Runnable {
 			System.err.println(e.getMessage());
 			return null;
 		}
-	}
-
-	public TokenRingClient() {
-		// System.err.println("TokenRingClient constructor");
-		/**********************************************************************************/
-		// config.setServerURL(nextHost);
-		// xmlRpcClient.setConfig(config);
-		randomOperation = new RandomOperation();
 	}
 
 	@Override
@@ -82,13 +74,11 @@ public class TokenRingClient extends Client implements Runnable {
 				while (state != State.HELD) {
 					condition.await();
 				}
-
 				executeForAll("Node.doCalculation",
 						randomOperation.nextOperationAndValue());
 				exitSection();
 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				lock.unlock();
@@ -104,7 +94,6 @@ public class TokenRingClient extends Client implements Runnable {
 			System.err.println("Sending token to " + nextHost);
 			config.setServerURL(nextHost);
 			xmlRpcClient.execute("Node.receiveToken", emptyParams);
-			// System.err.println("Token is sent to: "+config.getServerURL());
 		} catch (XmlRpcException e) {
 			System.err.println("Error while sending token!");
 			e.printStackTrace();
