@@ -6,10 +6,10 @@ namespace CalculationNode.RicartAgrawala
 {
 	public static class RicardAgrawalaData
 	{
-		private static int _currentValue;
+		private static long _currentValue;
 		private static DateTime _lastRequestTS;
 
-		internal static int CurrentValue
+		internal static long CurrentValue
 		{
 			get { return _currentValue; }
 			set

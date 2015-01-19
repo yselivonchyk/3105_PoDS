@@ -10,6 +10,9 @@ namespace CalculationNode
 {
 	public abstract class ClientBase : IClient, IDisposable
 	{
+		public const int SesstionLength = 2000;
+		public const int EventDelayAvg = 50;
+
 		protected Uri BaseServerUri;
 		protected ServiceHost HostObject;
 		internal string LocalServerAddress;
@@ -89,7 +92,7 @@ namespace CalculationNode
 				return;
 
 			Running = true;
-			EventGenerator.Start(this, 2000, 100);
+			EventGenerator.Start(this, SesstionLength, EventDelayAvg);
 			// Wait for the late requests from peers.
 
 			while (RicardAgrawalaData.GetQueueCount() != 0 

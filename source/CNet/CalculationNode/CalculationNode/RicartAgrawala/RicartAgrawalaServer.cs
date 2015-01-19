@@ -10,7 +10,7 @@ namespace CalculationNode
 	{
 		public List<String> Fellows = new List<String>();
 
-		public int CurrentValue
+		public long CurrentValue
 		{
 			get { return RicardAgrawalaData.CurrentValue; }
 			protected set
@@ -39,7 +39,7 @@ namespace CalculationNode
 			ConsoleExtentions.Log("Server start recieved: " + seed);
 			PeersData.Calculations = 0;
 			CurrentValue = seed;
-			var t = new Thread(x => PeersData.LocalClient.StartSelf(CurrentValue));
+			var t = new Thread(x => PeersData.LocalClient.StartSelf(seed));
 			t.Start();
 			return true;
 		}
