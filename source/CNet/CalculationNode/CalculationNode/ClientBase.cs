@@ -72,23 +72,13 @@ namespace CalculationNode
 			if (Running)
 				return;
 
-			//ConsoleExtentions.Log("\n\rStart command performed. Seed: " + seed);
 			Parallel.ForEach(PeersData.GetAll(),
 				peer =>
 				{
-					Console.WriteLine("Send init request: {0} - {1} ", seed, peer);
+					Console.WriteLine("Send start request send: {0} - {1} ", seed, peer);
 					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.Init(seed);
-					Console.WriteLine("Finish init request: {0} - {1} ", seed, peer);
-				});
-
-			Parallel.ForEach(PeersData.GetAll(),
-				peer =>
-				{
-					Console.WriteLine("Send start request: {0} - {1} ", seed, peer);
-					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.Start();
-					Console.WriteLine("Finish start request: {0} - {1} ", seed, peer);
+					siblingProxy.Start(seed);
+					Console.WriteLine("Finished start request: {0} - {1} ", seed, peer);
 				});
 			Console.WriteLine("\r\n\r\n");
 		}
@@ -101,16 +91,17 @@ namespace CalculationNode
 			Running = true;
 			EventGenerator.Start(this, 2000, 100);
 			// Wait for the late requests from peers.
-			
-			Thread.Sleep(2000);
-			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}", 
-				RicardAgrawalaData.CurrentValue,
-				PeersData.Calculations));
-			while (RicardAgrawalaData.GetQueueCount() != 0)
+
+			while (RicardAgrawalaData.GetQueueCount() != 0 
+				|| RicardAgrawalaData.TimeFromRequest() < 2000)
 			{
-				Console.WriteLine("Wait for queue");
-				Thread.Sleep(100);
+				Console.WriteLine("Actively wait.");
+				Thread.Sleep(500);
 			}
+
+			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}",
+			RicardAgrawalaData.CurrentValue,
+			PeersData.Calculations));
 				
 			Running = false;
 		}

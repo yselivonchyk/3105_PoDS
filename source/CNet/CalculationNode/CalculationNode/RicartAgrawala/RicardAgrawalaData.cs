@@ -6,7 +6,18 @@ namespace CalculationNode.RicartAgrawala
 {
 	public static class RicardAgrawalaData
 	{
-		internal static int CurrentValue { get; set; }
+		private static int _currentValue;
+		private static DateTime _lastRequestTS;
+
+		internal static int CurrentValue
+		{
+			get { return _currentValue; }
+			set
+			{
+				_currentValue = value;
+				_lastRequestTS = DateTime.Now;
+			}
+		}
 
 		public static Object QueueLock = new object();
 		private static List<CalculationRequest> Queue { get; set; }
@@ -77,6 +88,11 @@ namespace CalculationNode.RicartAgrawala
 		public static int GetQueueCount()
 		{
 			return Queue.Count;
+		}
+
+		public static long TimeFromRequest()
+		{
+			return (DateTime.Now.Ticks - _lastRequestTS.Ticks) / TimeSpan.TicksPerMillisecond;
 		}
 
 		#endregion Request Queue

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalculationNode.Extentions;
 using CookComputing.XmlRpc;
 
 namespace CalculationNode
@@ -24,8 +25,9 @@ namespace CalculationNode
 			// put address into collection and create channelFactory for this address
 			if (Fellows.ContainsKey(address)) return;
 
+			var properUrl = NetworkExtentions.TryBuildServerUri(address);
 			var proxy = XmlRpcProxyGen.Create<IRicardAgrawalaProxy>();
-			proxy.Url = address;
+			proxy.Url = properUrl.ToString();
 			Fellows[address] = proxy;
 		}
 

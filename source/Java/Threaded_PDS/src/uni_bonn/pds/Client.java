@@ -16,7 +16,7 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 20000;
+	public final long SESSION_LENGTH = 2000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
 	public static XmlRpcClient xmlRpcClient;
@@ -144,7 +144,11 @@ public class Client {
 	}
 
 	public static URL addressToUrl(String address) throws MalformedURLException {
-		return new URL("http://".concat(address).concat("/xmlrpc"));
+		if(!address.contains("http://"))
+			address = "http://" + address;
+		if(!address.contains("/xmlrpc"))
+			address = address + "/xmlrpc";
+		return new URL(address);
 	}
 
 }//

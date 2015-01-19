@@ -34,23 +34,11 @@ namespace CalculationNode
 			return true;
 		}
 
-		/// <summary>
-		/// Split of start into two methods due to Java limitations
-		/// </summary>
-		/// <param name="seed"></param>
-		/// <returns></returns>
-		public bool Init(int seed)
+		public bool Start(int seed)
 		{
-			//Console.Clear();
-			ConsoleExtentions.Log("Server init recieved: " + seed);
+			ConsoleExtentions.Log("Server start recieved: " + seed);
 			PeersData.Calculations = 0;
 			CurrentValue = seed;
-			return true;
-		}
-
-		public bool Start()
-		{
-			ConsoleExtentions.Log("Server start recieved");
 			var t = new Thread(x => PeersData.LocalClient.StartSelf(CurrentValue));
 			t.Start();
 			return true;
