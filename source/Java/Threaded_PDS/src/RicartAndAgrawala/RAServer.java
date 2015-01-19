@@ -1,26 +1,20 @@
 package RicartAndAgrawala;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import uni_bonn.pds.Client.State;
 import uni_bonn.pds.Server;
 
 public class RAServer extends Server {
 	public static volatile LCE logClock = new LCE();
-	ReentrantLock clockLock = new ReentrantLock();
 
 	@Override
-	synchronized public boolean start() {
+	synchronized public boolean start(int initValue) {
 		logClock.reset();
-		return super.start();
+		return super.start(initValue);
 	}
 
 	public boolean receiveRequest(int TimeStamp, int ID) {
-
 		System.out.println("Request received!");
-		clockLock.lock();
 		logClock.adjustClocks(TimeStamp);
-		clockLock.unlock();
 		while (true) {
 			RAClient.lock.lock();
 			try {
@@ -51,9 +45,7 @@ public class RAServer extends Server {
 
 	@Override
 	public boolean doCalculation(String operation, int value) {
-		clockLock.lock();
 		RAServer.logClock.increase();
-		clockLock.unlock();
 		return super.doCalculation(operation, value);
 	}
 }

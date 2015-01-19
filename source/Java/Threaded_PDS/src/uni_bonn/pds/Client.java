@@ -93,8 +93,7 @@ public class Client {
 				}
 			}
 			System.out.println("Signed off!");
-		}
-		else {
+		} else {
 			System.out.println("You are not connected to network!");
 		}
 	}
@@ -104,9 +103,6 @@ public class Client {
 		if (serverURLs.size() > 1) {
 			Vector<Object> parameters = new Vector<Object>();
 			parameters.add(initValue);
-			executeForAll("Node.setInitValue", parameters);
-
-			parameters.removeAllElements();
 			executeForAll("Node.start", parameters);
 
 		} else
@@ -143,6 +139,7 @@ public class Client {
 				+ " network members:");
 		for (URL url : serverURLs) {
 			System.out.println(url.getAuthority());
+			// System.out.println(url.toString());
 		}
 	}
 
@@ -150,4 +147,4 @@ public class Client {
 		return new URL("http://".concat(address).concat("/xmlrpc"));
 	}
 
-}
+}//

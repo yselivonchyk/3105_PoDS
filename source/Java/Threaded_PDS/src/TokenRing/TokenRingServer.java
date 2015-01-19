@@ -8,7 +8,7 @@ public class TokenRingServer extends Server {
 	public static boolean finished;
 
 	@Override
-	public boolean start() {
+	synchronized public boolean start(int initValue) {
 		if (TokenRingClient.started)
 			TokenRingClient.state = State.HELD;
 		else
@@ -16,7 +16,7 @@ public class TokenRingServer extends Server {
 		finished = false;
 		TokenRingClient.nextHost = TokenRingClient.findNextHost();
 		System.err.println("NextHost: " + TokenRingClient.nextHost);
-		return super.start();
+		return super.start(initValue);
 	}
 
 	public boolean receiveToken() {

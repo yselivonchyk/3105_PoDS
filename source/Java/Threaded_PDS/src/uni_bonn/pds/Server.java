@@ -91,13 +91,9 @@ public class Server {
 		return machinesIPs.toArray(); // sending array of known nodes
 	}
 
-	public boolean setInitValue(int initValue) {
-		processingValue = initValue;
-		return true;
-	}
-
 	/* Receive initial value and start algorithm */
-	public boolean start() {
+	public boolean start(int initValue) {
+		processingValue = initValue;
 		finishedSessions = 0;
 		System.out.println("Start calculations! InitialValue = "
 				+ processingValue);

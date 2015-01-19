@@ -6,14 +6,14 @@ public class LCE { // Extended Lamport Clocks
 	int currentTimeStamp;
 
 	public LCE() {
-		currentTimeStamp = 0 ;
+		currentTimeStamp = 0;
 	}
 
 	public int getCurrentTimeStamp() {
 		return currentTimeStamp;
 	}
 
-	public void increase() {
+	synchronized public void increase() {
 		currentTimeStamp++;
 	}
 
@@ -21,7 +21,7 @@ public class LCE { // Extended Lamport Clocks
 		currentTimeStamp = 0;
 	}
 
-	public void adjustClocks(int otherMachineTime) {
+	synchronized public void adjustClocks(int otherMachineTime) {
 		if (otherMachineTime > currentTimeStamp)
 			currentTimeStamp = otherMachineTime + 1;
 	}

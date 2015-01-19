@@ -24,8 +24,8 @@ public class RAClient extends Client implements Runnable {
 	LCE logClock = RAServer.logClock;
 	long startTime;
 
-	public volatile static ReentrantLock lock = new ReentrantLock(true);
-	public volatile static Condition condition = lock.newCondition();
+	public static ReentrantLock lock = new ReentrantLock(true);
+	public static Condition condition = lock.newCondition();
 
 	ExecutorService pool;
 	LinkedList<Future<Boolean>> oKs = new LinkedList<Future<Boolean>>();
