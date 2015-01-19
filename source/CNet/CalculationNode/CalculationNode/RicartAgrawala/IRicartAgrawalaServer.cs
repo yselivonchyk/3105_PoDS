@@ -11,7 +11,7 @@ namespace CalculationNode
         [XmlRpcMethod( "Node.join")]
         Object[] Join (string address);
 
-		[XmlRpcMethod( "Node.singOff")]
+		[XmlRpcMethod("Node.singoff")]
 		bool SingOff(string address);
 
 		[XmlRpcMethod("Node.setInitValue")]
@@ -27,7 +27,7 @@ namespace CalculationNode
 //		bool DoCalculation(String operation, int value, int final);
 
 		[XmlRpcMethod("Node.receiveRequest")]
-		bool RecieveAccess(String address, int time, int id);
+		bool RecieveAccess(int time, int id);
 
 		[XmlRpcMethod("Node.finalizeSession")]
 		void EspaciallyForElchyn();

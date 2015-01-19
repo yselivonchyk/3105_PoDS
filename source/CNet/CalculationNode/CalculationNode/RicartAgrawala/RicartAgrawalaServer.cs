@@ -104,13 +104,13 @@ namespace CalculationNode
 		/// <param name="address"></param>
 		/// <param name="time"></param>
 		/// <returns>current timestemp</returns>
-		public bool RecieveAccess(string address, int time, int id)
+		public bool RecieveAccess(int time, int id)
 		{
 			RicardAgrawalaData.RATimestamp = time;
 			// create request object
 			var request = new CalculationRequest
 			              {
-				              Address = address,
+				              Address = id.ToString(),
 				              Time = time,
 				              Guid = Guid.NewGuid()
 			              };
@@ -128,12 +128,12 @@ namespace CalculationNode
 						Thread.Sleep(1000);
 						continue;
 					}
-					if (client.LocalServerAddress == address 
+					if (PeersData.ID == id 
 						|| !RicardAgrawalaData.IsInterested 
 						|| HasPriority(time, id))
 					{
 						RicardAgrawalaData.PopRequest(request);
-						Console.WriteLine("I am good with {0} {1} {2}", address, time, id);
+						Console.WriteLine("I am good with ID:{1} at his time: {0}", time, id);
 						//return RicardAgrawalaData.ExectTime;
 						return true;
 					}
