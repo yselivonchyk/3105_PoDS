@@ -13,7 +13,6 @@ namespace CalculationNode
 	public static class PeersData
 	{
 		public static ClientBase LocalClient { get; set; }
-		public static int Calculations { get; set; }
 
 		internal static Dictionary<String, IRicardAgrawalaProxy> Fellows =
 			new Dictionary<String, IRicardAgrawalaProxy>();

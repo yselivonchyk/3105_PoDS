@@ -16,7 +16,21 @@ namespace CalculationNode
 		protected Uri BaseServerUri;
 		protected ServiceHost HostObject;
 		internal string LocalServerAddress;
-		public static bool Running { get; private set; }
+
+		private static bool _running;
+
+		public static bool Running
+		{
+			get
+			{
+				return _running;
+			}
+			private set
+			{
+				_running = value;
+				RicardAgrawalaData.Calculations = 0;
+			}
+		}
 
 		protected ClientBase(Uri baseServerUri)
 		{
@@ -62,11 +76,11 @@ namespace CalculationNode
 			foreach (var peer in PeersData.GetAll())
 			{
 				var siblingProxy = PeersData.GetChannel(peer);
-				siblingProxy.SingOff(LocalServerAddress);
+				siblingProxy.SignOff(LocalServerAddress);
 			}
 
 			Parallel.ForEach(PeersData.GetAll(),
-				peer => PeersData.GetChannel(peer).SingOff(LocalServerAddress));
+				peer => PeersData.GetChannel(peer).SignOff(LocalServerAddress));
 			PeersData.Empty();
 		}
 
@@ -104,7 +118,7 @@ namespace CalculationNode
 
 			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}",
 			RicardAgrawalaData.CurrentValue,
-			PeersData.Calculations));
+			RicardAgrawalaData.Calculations));
 				
 			Running = false;
 		}

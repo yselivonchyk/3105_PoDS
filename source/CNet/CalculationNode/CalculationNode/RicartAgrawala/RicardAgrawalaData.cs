@@ -18,6 +18,7 @@ namespace CalculationNode.RicartAgrawala
 				_lastRequestTS = DateTime.Now;
 			}
 		}
+		public static int Calculations { get; set; }
 
 		public static Object QueueLock = new object();
 		private static List<CalculationRequest> Queue { get; set; }

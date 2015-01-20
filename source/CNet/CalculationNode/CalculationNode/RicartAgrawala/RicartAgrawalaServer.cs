@@ -27,7 +27,7 @@ namespace CalculationNode
 			return PeersData.GetAll().Select(x => (Object)x).ToArray();
 		}
 
-		public bool SingOff(string address)
+		public bool SignOff(string address)
 		{
 			ConsoleExtentions.Log(String.Format("Sign off request from {0}", address));
 			PeersData.Remove(address);
@@ -37,16 +37,27 @@ namespace CalculationNode
 		public bool Start(int seed)
 		{
 			ConsoleExtentions.Log("Server start recieved: " + seed);
-			PeersData.Calculations = 0;
+			SafetyCheck();
+			RicardAgrawalaData.Calculations = 0;
 			CurrentValue = seed;
 			var t = new Thread(x => PeersData.LocalClient.StartSelf(seed));
 			t.Start();
 			return true;
 		}
 
+		private static void SafetyCheck()
+		{
+			if (RicardAgrawalaData.Calculations != 0)
+			{
+				Console.BackgroundColor = ConsoleColor.Red;
+				Console.WriteLine("WARNING! some operations were performed before start");
+				Console.BackgroundColor = ConsoleColor.Black;
+			}
+		}
+
 		public bool DoCalculation(string operation, int value)
 		{
-			PeersData.Calculations++;
+			RicardAgrawalaData.Calculations++;
 			var original = CurrentValue;
 			Console.WriteLine("Lock reached");
 			switch (operation)
@@ -104,8 +115,6 @@ namespace CalculationNode
 			              };
 			// place into queue
 			RicardAgrawalaData.AddRequest(request);
-			// loop
-			var client = (RicartAgrawalaClient) PeersData.LocalClient;
 			while (true)
 			{
 				lock (RicardAgrawalaData.QueueLock)
