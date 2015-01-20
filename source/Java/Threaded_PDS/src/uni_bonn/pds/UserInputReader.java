@@ -45,7 +45,7 @@ public class UserInputReader implements Runnable {
 			client.join(memberInfo);
 			break;
 		case "signoff":
-			client.signoff();
+			client.signOff();
 			break;
 		case "start":
 			System.out.print("Enter initial value -> ");
@@ -67,7 +67,7 @@ public class UserInputReader implements Runnable {
 			break;
 		case "exit":
 			System.out.println("Exiting...");
-			client.signoff();
+			client.signOff();
 			System.exit(0);
 			break;
 		default:

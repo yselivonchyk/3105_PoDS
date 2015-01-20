@@ -115,8 +115,7 @@ public class Server {
 
 			for (int i = 0; i < Client.serverURLs.size(); i++) {
 				URL url = Client.serverURLs.get(i);
-				String str = url.getAuthority();
-				if (str.compareTo(leavingMachine) == 0)
+				if (url.toString().compareTo(leavingMachine) == 0)
 					Client.serverURLs.remove(i);
 			}
 
