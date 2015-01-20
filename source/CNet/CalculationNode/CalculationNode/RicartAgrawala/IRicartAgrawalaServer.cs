@@ -11,8 +11,8 @@ namespace CalculationNode
         [XmlRpcMethod( "Node.join")]
         Object[] Join (string address);
 
-		[XmlRpcMethod("Node.singoff")]
-		bool SingOff(string address);
+		[XmlRpcMethod("Node.signOff")]
+		bool SignOff(string address);
 
 		[XmlRpcMethod("Node.start")]
         bool Start(int seed);
