@@ -100,8 +100,7 @@ class RequestSender implements Callable<Boolean> {
 		this.req = req;
 	}
 
-	public Boolean call() throws XmlRpcException {
-		System.out.println(url);
+	public Boolean call() {
 		config.setServerURL(url);
 		xmlRpcClient.setConfig(config);
 		try {
@@ -109,7 +108,7 @@ class RequestSender implements Callable<Boolean> {
 					req.getParams());
 		} catch (XmlRpcException e) {
 			System.err.println(e.getMessage());
-			throw e;
 		}
+		return false;
 	}
 }

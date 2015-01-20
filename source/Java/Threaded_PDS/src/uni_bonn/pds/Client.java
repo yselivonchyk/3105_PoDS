@@ -16,7 +16,7 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 2000;
+	public final long SESSION_LENGTH = 20000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
 	public static XmlRpcClient xmlRpcClient;
@@ -110,7 +110,8 @@ public class Client {
 	}
 
 	/* Function for multicasting */
-	public void executeForAll(String methodName, Vector<Object> params) {
+	synchronized public void executeForAll(String methodName,
+			Vector<Object> params) {
 
 		for (URL url : serverURLs) {
 			xmlRpcClient.setConfig(null);
@@ -144,9 +145,9 @@ public class Client {
 	}
 
 	public static URL addressToUrl(String address) throws MalformedURLException {
-		if(!address.contains("http://"))
+		if (!address.contains("http://"))
 			address = "http://" + address;
-		if(!address.contains("/xmlrpc"))
+		if (!address.contains("/xmlrpc"))
 			address = address + "/xmlrpc";
 		return new URL(address);
 	}

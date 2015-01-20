@@ -11,7 +11,6 @@ public class Request {
 
 	public Request() {
 		this.nodeID = LCE.machineID;
-		
 		this.params.add(0);
 		this.params.add(nodeID);
 	}
@@ -23,10 +22,6 @@ public class Request {
 
 	public int getTimestamp() {
 		return this.currentTimeStamp;
-	}
-
-	public int getNodeID() {
-		return this.nodeID;
 	}
 
 	public int getTimestampAndID() {
