@@ -15,10 +15,7 @@ namespace CalculationNode
 		bool SignOff(string address);
 
 		[XmlRpcMethod("Node.start")]
-        bool Start();
-
-		[XmlRpcMethod("Node.setInitValue")]
-		bool Initialize(int seed);
+        bool Start(int seed);
 
 		[XmlRpcMethod("Node.doCalculation")]
 		bool DoCalculation(String operation, int value);

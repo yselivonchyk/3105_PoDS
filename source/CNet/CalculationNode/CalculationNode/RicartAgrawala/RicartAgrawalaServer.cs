@@ -34,20 +34,14 @@ namespace CalculationNode
 			return true;
 		}
 
-		public bool Start()
-		{
-			ConsoleExtentions.Log("Server start recieved");
-			var t = new Thread(x => PeersData.LocalClient.StartSelf(Convert.ToInt32(CurrentValue)));
-			t.Start();
-			return true;
-		}
-
-		public bool Initialize(int seed)
+		public bool Start(int seed)
 		{
 			ConsoleExtentions.Log("Server start recieved: " + seed);
 			SafetyCheck();
 			RicardAgrawalaData.Calculations = 0;
 			CurrentValue = seed;
+			var t = new Thread(x => PeersData.LocalClient.StartSelf(seed));
+			t.Start();
 			return true;
 		}
 

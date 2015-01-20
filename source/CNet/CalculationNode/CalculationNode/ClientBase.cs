@@ -88,20 +88,13 @@ namespace CalculationNode
 		{
 			if (Running)
 				return;
-			Parallel.ForEach(PeersData.GetAll(),
-				peer =>
-				{
-					Console.WriteLine("Send init request send: {0} - {1} ", seed, peer);
-					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.Initialize(seed);
-					Console.WriteLine("Finished init request: {0} - {1} ", seed, peer);
-				});
+
 			Parallel.ForEach(PeersData.GetAll(),
 				peer =>
 				{
 					Console.WriteLine("Send start request send: {0} - {1} ", seed, peer);
 					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.Start();
+					siblingProxy.Start(seed);
 					Console.WriteLine("Finished start request: {0} - {1} ", seed, peer);
 				});
 			Console.WriteLine("\r\n\r\n");
