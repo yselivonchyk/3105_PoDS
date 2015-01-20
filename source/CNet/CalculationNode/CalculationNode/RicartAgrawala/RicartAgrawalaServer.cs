@@ -59,7 +59,6 @@ namespace CalculationNode
 		{
 			RicardAgrawalaData.Calculations++;
 			var original = CurrentValue;
-			Console.WriteLine("Lock reached");
 			switch (operation)
 			{
 				case "sum":
@@ -79,7 +78,8 @@ namespace CalculationNode
 					return false;
 			}
 
-			ConsoleExtentions.Log(String.Format("Server calc recieved: {0}({1}) \t {2} -> {3}", operation, value, original, CurrentValue));
+			ConsoleExtentions.Log(String.Format("Server calc recieved: {0}({1}) \t {2} -> {3}", 
+				operation, value, original, CurrentValue));
 			return true;
 		}
 
@@ -91,7 +91,7 @@ namespace CalculationNode
 				return true;
 			else
 			{
-				Console.WriteLine("I have done something wrong :(  my: {0} - {1} : expected", initial, final);
+				Console.WriteLine("I have done something wrong :(  my: {0} - {1} : expected", initial.ToString("D20"), final.ToString("D20"));
 				Thread.Sleep(1000);
 				return false;
 			}
@@ -130,7 +130,10 @@ namespace CalculationNode
 						|| HasPriority(time, id))
 					{
 						RicardAgrawalaData.PopRequest(request);
-						Console.WriteLine("I am good with ID:{1} at his time: {0}", time, id);
+						Console.WriteLine("\tSend OK (ID:{1} T:{0}) MY(T:{2} RT:{3} ID:{4})", time, id, 
+							RicardAgrawalaData.ExectTime,
+							RicardAgrawalaData.IsInterested ? RicardAgrawalaData.RequestTime.ToString() : "-",
+							PeersData.ID);
 						//return RicardAgrawalaData.ExectTime;
 						return true;
 					}

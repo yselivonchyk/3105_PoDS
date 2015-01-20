@@ -29,7 +29,7 @@ namespace CalculationNode
 				if (watch.ElapsedMilliseconds > sessionLength)
 					return;
 
-				ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " t:" + RicardAgrawalaData.ExectTime);
+				//ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " t:" + RicardAgrawalaData.ExectTime);
 				
 				switch ((Operations)operation)
 				{

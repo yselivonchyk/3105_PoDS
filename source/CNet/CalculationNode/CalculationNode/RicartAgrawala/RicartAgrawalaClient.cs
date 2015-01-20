@@ -71,16 +71,16 @@ namespace CalculationNode.RicartAgrawala
 						var siblingProxy = PeersData.GetChannel(peer);
 						var siblingTime = siblingProxy.RecieveAccess( RicardAgrawalaData.RequestTime, PeersData.ID);
 						//RicardAgrawalaData.RATimestamp = siblingTime;
-						Console.WriteLine("-> 1 {2}  {0} is Ok at {1} (r:{3} c:{4})", 
-							"_", siblingTime, guid, 
-							RicardAgrawalaData.RequestTime, RicardAgrawalaData.ExectTime);
+//						Console.WriteLine("-> 1 {2}  {0} is Ok at {1} (r:{3} c:{4})", 
+//							"_", siblingTime, guid, 
+//							RicardAgrawalaData.RequestTime, RicardAgrawalaData.ExectTime);
 					});
 
 				Parallel.ForEach(peers,
 					peer =>
 					{
-						Console.WriteLine("-> 2 {2}  {0} performes {1} (r:{3} c:{4})", "", op + "(" + param + ")", guid,
-							RicardAgrawalaData.RequestTime, RicardAgrawalaData.ExectTime);
+//						Console.WriteLine("-> 2 {2}  {0} performes {1} (r:{3} c:{4})", "", op + "(" + param + ")", guid,
+//							RicardAgrawalaData.RequestTime, RicardAgrawalaData.ExectTime);
 						var siblingProxy = PeersData.GetChannel(peer);
 						//siblingProxy.DoCalculation(op, param);
 						//if (!siblingProxy.DoCalculation(op, param, current))
@@ -89,8 +89,8 @@ namespace CalculationNode.RicartAgrawala
 							Console.WriteLine("This guy messed up: " + peer);
 							Thread.Sleep(60000);
 						}
-						Console.WriteLine("-> 3 {2}  {0} performed {1} (r:{3} c:{4})", "", op + "(" + param + ")", guid,
-							RicardAgrawalaData.RequestTime, RicardAgrawalaData.ExectTime);
+//						Console.WriteLine("-> 3 {2}  {0} performed {1} (r:{3} c:{4})", "", op + "(" + param + ")", guid,
+//							RicardAgrawalaData.RequestTime, RicardAgrawalaData.ExectTime);
 					});
 
 				RicardAgrawalaData.IsInterested = false;
