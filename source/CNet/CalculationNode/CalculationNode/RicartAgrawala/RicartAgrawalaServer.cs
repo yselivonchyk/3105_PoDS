@@ -38,7 +38,6 @@ namespace CalculationNode
 		{
 			ConsoleExtentions.Log("Server start recieved: " + seed);
 			SafetyCheck();
-			RicardAgrawalaData.Calculations = 0;
 			CurrentValue = seed;
 			var t = new Thread(x => PeersData.LocalClient.StartSelf(seed));
 			t.Start();
@@ -106,6 +105,7 @@ namespace CalculationNode
 		public bool RecieveAccess(int time, int id)
 		{
 			RicardAgrawalaData.RATimestamp = time;
+			RicardAgrawalaData.RegisterOperation(id);
 			// create request object
 			var request = new CalculationRequest
 			              {

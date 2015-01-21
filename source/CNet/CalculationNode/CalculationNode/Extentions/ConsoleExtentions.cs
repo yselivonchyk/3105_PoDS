@@ -18,6 +18,7 @@ namespace CalculationNode
 			Console.WriteLine("1 - Join command");
 			Console.WriteLine("2 - Sign off command");
 			Console.WriteLine("3 - Start");
+			Console.WriteLine("8 - Clean up condole");
 			Console.WriteLine("9 - List peers");
 			Console.WriteLine("Esc - exit");
 		}

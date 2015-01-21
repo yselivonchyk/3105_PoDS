@@ -27,8 +27,9 @@ namespace CalculationNode
 			}
 			private set
 			{
+				if (value)
+					RicardAgrawalaData.ResetStats();
 				_running = value;
-				RicardAgrawalaData.Calculations = 0;
 			}
 		}
 
@@ -112,13 +113,14 @@ namespace CalculationNode
 			while (RicardAgrawalaData.GetQueueCount() != 0 
 				|| RicardAgrawalaData.TimeFromRequest() < 2000)
 			{
-				Console.WriteLine("Actively wait.");
-				Thread.Sleep(500);
+				Thread.Sleep(250);
 			}
 
+			RicardAgrawalaData.PrintStats();
+
 			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}",
-			RicardAgrawalaData.CurrentValue,
-			RicardAgrawalaData.Calculations));
+				RicardAgrawalaData.CurrentValue,
+				RicardAgrawalaData.Calculations));
 				
 			Running = false;
 		}

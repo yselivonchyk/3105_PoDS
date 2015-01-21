@@ -52,6 +52,9 @@ namespace CalculationNode
 					case ConsoleKey.D3:
 						ricartAgrawalaClient.Start(5);
 						break;
+					case ConsoleKey.D8:
+						ConsoleExtentions.Regresh();
+						break;
 					case ConsoleKey.D9:
 						ricartAgrawalaClient.ListPeers();
 						break;

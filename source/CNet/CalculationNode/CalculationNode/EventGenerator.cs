@@ -18,6 +18,7 @@ namespace CalculationNode
 			var generator = new Random(AppDomain.CurrentDomain.GetHashCode() + PeersData.ID);
 			var watch = Stopwatch.StartNew();
 			Console.WriteLine("Genarator seed: " + (generator.GetHashCode() + PeersData.ID));
+			var localEvents = 0;
 			while (true)
 			{
 				var operation = generator.Next(3);
@@ -27,10 +28,12 @@ namespace CalculationNode
 
 				// termination condition
 				if (watch.ElapsedMilliseconds > sessionLength)
+				{
+					Console.WriteLine("\r\nGenerated {0} events localy", localEvents);
 					return;
-
+				}
 				//ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " t:" + RicardAgrawalaData.ExectTime);
-				
+				localEvents++;
 				switch ((Operations)operation)
 				{
 					case Operations.Divide:

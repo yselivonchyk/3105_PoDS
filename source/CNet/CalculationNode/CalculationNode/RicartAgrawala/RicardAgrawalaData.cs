@@ -9,6 +9,8 @@ namespace CalculationNode.RicartAgrawala
 		private static long _currentValue;
 		private static DateTime _lastRequestTS;
 
+		private static Dictionary<int, int> _operations; 
+
 		internal static long CurrentValue
 		{
 			get { return _currentValue; }
@@ -35,8 +37,8 @@ namespace CalculationNode.RicartAgrawala
 			{
 				if (value > ExectTime)
 					ExectTime = value;
-				else
-					ExectTime++;
+//				else
+//					ExectTime++;
 			}
 		}
 
@@ -97,5 +99,26 @@ namespace CalculationNode.RicartAgrawala
 		}
 
 		#endregion Request Queue
+
+		public static void ResetStats()
+		{
+			Calculations = 0;
+			_operations = new Dictionary<int, int>();
+		}
+
+		public static void RegisterOperation(int id)
+		{
+			if(!_operations.ContainsKey(id))
+				_operations.Add(id, 0);
+			_operations[id]++;
+		}
+
+		public static void PrintStats()
+		{
+			foreach (var pair in _operations)
+			{
+				Console.WriteLine("Recieved {0} REC_REQUEST calls from ID:{1}", pair.Value, pair.Key);
+			}
+		}
 	}
 }
