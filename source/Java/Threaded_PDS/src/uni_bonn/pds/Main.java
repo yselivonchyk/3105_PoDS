@@ -1,7 +1,10 @@
 package uni_bonn.pds;
 
 import java.util.Scanner;
+
 import org.apache.xmlrpc.XmlRpcException;
+
+import RicartAndAgrawala.RAClient;
 import RicartAndAgrawala.RAServer;
 import TokenRing.TokenRingClient;
 import TokenRing.TokenRingServer;
@@ -43,7 +46,7 @@ public class Main {
 		if (algorithm == 0)
 			client = new TokenRingClient();
 		else
-			client = new Client();
+			client = new RAClient();
 
 		// Creating and startinf input reader thread
 		Thread inputThread = new Thread(new UserInputReader(client));

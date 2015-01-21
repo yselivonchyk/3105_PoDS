@@ -20,6 +20,7 @@ import TokenRing.TokenRingServer;
 public class Server {
 
 	public volatile static long processingValue = 0;
+	public volatile static long operationCounter = 0;
 	public static final int PORT = findFreePort();
 
 	// Holds IPs of network nodes
@@ -94,6 +95,7 @@ public class Server {
 	/* Receive initial value and start algorithm */
 	public boolean start(int initValue) {
 		processingValue = initValue;
+		operationCounter = 0;
 		finishedSessions = 0;
 		System.out.println("Start calculations! InitialValue = "
 				+ processingValue);
@@ -115,8 +117,7 @@ public class Server {
 
 			for (int i = 0; i < Client.serverURLs.size(); i++) {
 				URL url = Client.serverURLs.get(i);
-				String str = url.getAuthority();
-				if (str.compareTo(leavingMachine) == 0)
+				if (url.toString().compareTo(leavingMachine) == 0)
 					Client.serverURLs.remove(i);
 			}
 
@@ -129,7 +130,7 @@ public class Server {
 	}
 
 	public boolean doCalculation(String operation, int value) {
-		// int intValue = Integer.parseInt(value);
+		operationCounter++;
 		switch (operation) {
 		case "sum":
 			processingValue += value;
@@ -148,7 +149,8 @@ public class Server {
 			return false;
 		}
 		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value + "  PROCESSING_VALUE: " + processingValue + "\n");
+				+ value + "  PROCESSING_VALUE: " + processingValue + "\n"
+				+ "Operations count:" + operationCounter + "\n");
 		return true;
 	}
 

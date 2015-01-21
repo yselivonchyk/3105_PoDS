@@ -31,14 +31,6 @@ public class RAServer extends Server {
 				RAClient.lock.unlock();
 			}
 		}
-
-		/**
-		 * System.out .println("Received: "+ TimeStamp+ ID+ " Current: "+
-		 * RAClient.request.getTimestampAndID() + " State: "+ RAClient.state +
-		 * " Condition: " + ((RAClient.state == State.HELD) || ((RAClient.state
-		 * == State.WANTED) && (RAClient.request .getTimestampAndID() <
-		 * (TimeStamp * 10 + ID)))));
-		 */
 		System.out.println("Sending OK!");
 		return true;
 	}

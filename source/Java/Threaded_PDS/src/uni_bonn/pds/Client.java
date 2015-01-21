@@ -16,9 +16,10 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 2000;
+	public final long SESSION_LENGTH = 20000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
-	public static String currentMachineInfo = machineIP() + ":" + Server.PORT;
+	public static String currentMachineInfo = urlFormatter(machineIP() + ":"
+			+ Server.PORT);
 	public static XmlRpcClient xmlRpcClient;
 	public static XmlRpcClientConfigImpl config;
 
@@ -43,7 +44,7 @@ public class Client {
 
 		System.out.println("Setting URL...");
 		try {
-			config.setServerURL(addressToUrl(memberIPandPort));
+			config.setServerURL(addressToUrl(urlFormatter(memberIPandPort)));
 			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
 			params.removeAllElements();
@@ -72,7 +73,7 @@ public class Client {
 		}
 	}
 
-	public void signoff() throws XmlRpcException {
+	public void signOff() throws XmlRpcException {
 		Vector<Object> machineInfo = new Vector<Object>();
 		machineInfo.add(currentMachineInfo);
 
@@ -110,7 +111,8 @@ public class Client {
 	}
 
 	/* Function for multicasting */
-	public void executeForAll(String methodName, Vector<Object> params) {
+	synchronized public void executeForAll(String methodName,
+			Vector<Object> params) {
 
 		for (URL url : serverURLs) {
 			xmlRpcClient.setConfig(null);
@@ -131,10 +133,6 @@ public class Client {
 	}
 
 	public void printListOfNodes() {
-		if (serverURLs.size() == 1) {
-			System.out.println("This node is not connected to network!");
-			return;
-		}
 		System.out.println("There are " + serverURLs.size()
 				+ " network members:");
 		for (URL url : serverURLs) {
@@ -144,11 +142,15 @@ public class Client {
 	}
 
 	public static URL addressToUrl(String address) throws MalformedURLException {
-		if(!address.contains("http://"))
+		if (!address.contains("http://"))
 			address = "http://" + address;
-		if(!address.contains("/xmlrpc"))
+		if (!address.contains("/xmlrpc"))
 			address = address + "/xmlrpc";
 		return new URL(address);
+	}
+
+	public static String urlFormatter(String ipAndPort) {
+		return "http://".concat(ipAndPort).concat("/xmlrpc");
 	}
 
 }//
