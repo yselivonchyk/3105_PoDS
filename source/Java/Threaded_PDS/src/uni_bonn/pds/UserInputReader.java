@@ -52,7 +52,6 @@ public class UserInputReader implements Runnable {
 			try {
 				client.start(Integer.parseInt(in.readLine()));
 			} catch (NumberFormatException e) {
-
 				System.err.println("Error! " + e.getMessage());
 			}
 			break;
@@ -76,5 +75,4 @@ public class UserInputReader implements Runnable {
 			return;
 		}
 	}
-
 }

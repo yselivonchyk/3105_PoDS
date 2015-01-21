@@ -19,8 +19,10 @@ import TokenRing.TokenRingServer;
 
 public class Server {
 
-	public volatile static long processingValue = 0;
-	public volatile static long operationCounter = 0;
+	private static long processingValue = 0;
+	private static long operationCounter = 0;
+	public static int finishedSessions;
+
 	public static final int PORT = findFreePort();
 
 	// Holds IPs of network nodes
@@ -58,7 +60,6 @@ public class Server {
 			System.err.println(e.getMessage());
 		}
 		xmlRpcServer.setHandlerMapping(phm);
-
 		XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer
 				.getConfig();
 		serverConfig.setEnabledForExtensions(true);
@@ -93,7 +94,7 @@ public class Server {
 	}
 
 	/* Receive initial value and start algorithm */
-	public boolean start(int initValue) {
+	synchronized public boolean start(int initValue) {
 		processingValue = initValue;
 		operationCounter = 0;
 		finishedSessions = 0;
@@ -112,15 +113,16 @@ public class Server {
 	/* Leave the network! */
 	public boolean signOff(String leavingMachine) {
 
+		// Deleting from machineIPs
 		if (machinesIPs.remove(leavingMachine)) {
 			System.out.println("Machine " + leavingMachine + " left network!");
 
+			// Deleting from serverURLs
 			for (int i = 0; i < Client.serverURLs.size(); i++) {
 				URL url = Client.serverURLs.get(i);
 				if (url.toString().compareTo(leavingMachine) == 0)
 					Client.serverURLs.remove(i);
 			}
-
 			// System.out.println("MachinesIPS.size " + machinesIPs.size()
 			// + " ServerURLs.size " + Client.serverURLs.size());
 			return true;
@@ -129,7 +131,7 @@ public class Server {
 		return false;
 	}
 
-	public boolean doCalculation(String operation, int value) {
+	synchronized public boolean doCalculation(String operation, int value) {
 		operationCounter++;
 		switch (operation) {
 		case "sum":
@@ -148,20 +150,19 @@ public class Server {
 			System.err.println("Unknown operation in doCalculation!");
 			return false;
 		}
-		Log.logger.info("< " + operation + " >" + " performed with value:"
-				+ value + "  PROCESSING_VALUE: " + processingValue + "\n"
-				+ "Operations count:" + operationCounter + "\n");
+		System.out.println(operationCounter + ". < " + operation + " >"
+				+ " performed with " + "value:" + value
+				+ "  PROCESSING_VALUE: " + processingValue);
 		return true;
 	}
-
-	public static int finishedSessions;
 
 	public boolean finalizeSession() {
 		finishedSessions++;
 		System.out.println("Finished received! Machines: " + finishedSessions);
-		if (finishedSessions >= machinesIPs.size()) {
+		if (finishedSessions == machinesIPs.size()) {
 			System.out.println("SESSION ENDED! FINAL RESULT: "
-					+ processingValue);
+					+ processingValue + " Operations performed: "
+					+ operationCounter);
 		}
 		return true;
 	}

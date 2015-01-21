@@ -2,7 +2,6 @@ package TokenRing;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.locks.Condition;
@@ -29,9 +28,7 @@ public class TokenRingClient extends Client implements Runnable {
 		try {
 			currentMachineURL = Client.addressToUrl(currentMachineInfo);
 			@SuppressWarnings("unchecked")
-			ArrayList<URL> temp = (ArrayList<URL>) TokenRingClient.serverURLs
-					.clone();
-
+			Vector<URL> temp = (Vector<URL>) TokenRingClient.serverURLs.clone();
 			URLComparator urlComparator = new URLComparator();
 			Collections.sort(temp, urlComparator);
 			for (URL next : temp) {
@@ -77,14 +74,12 @@ public class TokenRingClient extends Client implements Runnable {
 				executeForAll("Node.doCalculation",
 						randomOperation.nextOperationAndValue());
 				exitSection();
-
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} finally {
 				lock.unlock();
 			}
 		}
-
 		finalizeSession();
 	}
 

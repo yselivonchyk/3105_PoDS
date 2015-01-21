@@ -44,12 +44,15 @@ public class RAClient extends Client implements Runnable {
 	}
 
 	public void enterSection() {
-		System.out.println("Entering critical area!");
+		// System.out.println("Entering critical area!");
 		lock.lock();
+		logClock.increase();
+		request.modify(logClock.getCurrentTimeStamp()); // creating new request
 		state = State.WANTED;
-		request.modify(logClock.getCurrentTimeStamp());
 		lock.unlock();
 
+		// Sending requests to all node
+		// and waiting for OKs
 		for (URL url : serverURLs)
 			oKs.add(pool.submit(new RequestSender(url, request)));
 		boolean notListen = false;
@@ -60,16 +63,17 @@ public class RAClient extends Client implements Runnable {
 			}
 		}
 		oKs.clear();
+
 		lock.lock();
 		state = State.HELD;
 		lock.unlock();
 	}
 
-	synchronized public void exitSection() {
-		System.out.println("Exiting critical area!");
+	public void exitSection() {
+		// System.out.println("Exiting critical area!");
 		lock.lock();
 		state = State.RELEASED;
-		condition.signalAll();
+		condition.signalAll(); //Sending OKs to all waiting nodes
 		lock.unlock();
 
 	}
@@ -78,9 +82,8 @@ public class RAClient extends Client implements Runnable {
 	public void run() {
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
-
 			enterSection();
-			System.err.println("Access to critical area obtained!");
+			// System.err.println("Access to critical area obtained!");
 			this.executeForAll("Node.doCalculation",
 					randomOperation.nextOperationAndValue());
 			exitSection();

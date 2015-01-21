@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -16,7 +15,7 @@ public class Client {
 		RELEASED, WANTED, HELD
 	};
 
-	public final long SESSION_LENGTH = 20000;
+	public final long SESSION_LENGTH = 1000;
 	Vector<Object> params = new Vector<Object>();// parameters to be sent to
 	public static String currentMachineInfo = urlFormatter(machineIP() + ":"
 			+ Server.PORT);
@@ -24,7 +23,7 @@ public class Client {
 	public static XmlRpcClientConfigImpl config;
 
 	// URLs of other machines
-	public static ArrayList<URL> serverURLs = new ArrayList<URL>();
+	public static Vector<URL> serverURLs = new Vector<URL>();
 
 	public Client() {
 		config = new XmlRpcClientConfigImpl();
@@ -41,23 +40,20 @@ public class Client {
 	}
 
 	public void join(String memberIPandPort) {
-
-		System.out.println("Setting URL...");
 		try {
 			config.setServerURL(addressToUrl(urlFormatter(memberIPandPort)));
-			System.out.println("Setting configuration...");
 			xmlRpcClient.setConfig(config);
 			params.removeAllElements();
 			params.add(currentMachineInfo);
 			try {
-				Object res = xmlRpcClient.execute("Node.join", params);
-				Object[] result = (Object[]) res;
+				Object[] result = (Object[]) xmlRpcClient.execute("Node.join",
+						params);
 				for (Object obj : result) {
 					String temp = (String) obj;
 					if (Server.machinesIPs.add(temp))
 						serverURLs.add(addressToUrl(temp));
 				}
-				System.out.println("Successfully connected!\nData received");
+				System.out.println("Successfully connected!");
 
 				/* Letting other nodes know */
 				for (int i = 0; i < serverURLs.size(); i++) {
@@ -100,12 +96,10 @@ public class Client {
 	}
 
 	public void start(int initValue) {
-
 		if (serverURLs.size() > 1) {
 			Vector<Object> parameters = new Vector<Object>();
 			parameters.add(initValue);
 			executeForAll("Node.start", parameters);
-
 		} else
 			System.out.println("You are not connected to network!");
 	}
@@ -115,10 +109,8 @@ public class Client {
 			Vector<Object> params) {
 
 		for (URL url : serverURLs) {
-			xmlRpcClient.setConfig(null);
 			config.setServerURL(url);
 			xmlRpcClient.setConfig(config);
-			// System.out.println("Executing for: " + url.getAuthority());
 			try {
 				xmlRpcClient.execute(methodName, params);
 			} catch (XmlRpcException e) {
@@ -137,7 +129,6 @@ public class Client {
 				+ " network members:");
 		for (URL url : serverURLs) {
 			System.out.println(url.getAuthority());
-			// System.out.println(url.toString());
 		}
 	}
 
