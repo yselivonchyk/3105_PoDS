@@ -17,21 +17,6 @@ namespace CalculationNode
 		protected ServiceHost HostObject;
 		internal string LocalServerAddress;
 
-		private static bool _running;
-
-		public static bool Running
-		{
-			get
-			{
-				return _running;
-			}
-			private set
-			{
-				if (value)
-					RicardAgrawalaData.ResetStats();
-				_running = value;
-			}
-		}
 
 		protected ClientBase(Uri baseServerUri)
 		{
@@ -87,7 +72,7 @@ namespace CalculationNode
 
 		public void Start(int seed)
 		{
-			if (Running)
+			if (RicardAgrawalaData.Running)
 				return;
 
 			Parallel.ForEach(PeersData.GetAll(),
@@ -103,10 +88,10 @@ namespace CalculationNode
 
 		internal void StartSelf(int seed)
 		{
-			if (Running)
+			if (RicardAgrawalaData.Running)
 				return;
 
-			Running = true;
+			RicardAgrawalaData.Running = true;
 			EventGenerator.Start(this, SesstionLength, EventDelayAvg);
 			// Wait for the late requests from peers.
 
@@ -122,7 +107,7 @@ namespace CalculationNode
 				RicardAgrawalaData.CurrentValue,
 				RicardAgrawalaData.Calculations));
 				
-			Running = false;
+			RicardAgrawalaData.Running = false;
 		}
 
 		public abstract void Sum(int param);

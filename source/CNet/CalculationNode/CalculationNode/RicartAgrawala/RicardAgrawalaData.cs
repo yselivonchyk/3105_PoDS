@@ -9,7 +9,23 @@ namespace CalculationNode.RicartAgrawala
 		private static long _currentValue;
 		private static DateTime _lastRequestTS;
 
-		private static Dictionary<int, int> _operations; 
+		private static Dictionary<int, int> _operations;
+
+		private static bool _running;
+
+		public static bool Running
+		{
+			get
+			{
+				return _running;
+			}
+			set
+			{
+				if (value)
+					ResetStats();
+				_running = value;
+			}
+		}
 
 		internal static long CurrentValue
 		{

@@ -37,25 +37,21 @@ namespace CalculationNode
 		public bool Start(int seed)
 		{
 			ConsoleExtentions.Log("Server start recieved: " + seed);
-			SafetyCheck();
 			CurrentValue = seed;
 			var t = new Thread(x => PeersData.LocalClient.StartSelf(seed));
 			t.Start();
 			return true;
 		}
 
-		private static void SafetyCheck()
-		{
-			if (RicardAgrawalaData.Calculations != 0)
-			{
-				Console.BackgroundColor = ConsoleColor.Red;
-				Console.WriteLine("WARNING! some operations were performed before start");
-				Console.BackgroundColor = ConsoleColor.Black;
-			}
-		}
-
 		public bool DoCalculation(string operation, int value)
 		{
+			if (!RicardAgrawalaData.Running)
+			{
+				Console.BackgroundColor = ConsoleColor.Red;
+				Console.WriteLine("WARNING! Calculation request before server even started!!!");
+				Console.BackgroundColor = ConsoleColor.Black;
+			}
+
 			RicardAgrawalaData.Calculations++;
 			var original = CurrentValue;
 			switch (operation)
@@ -105,7 +101,6 @@ namespace CalculationNode
 		public bool RecieveAccess(int time, int id)
 		{
 			RicardAgrawalaData.RATimestamp = time;
-			RicardAgrawalaData.RegisterOperation(id);
 			// create request object
 			var request = new CalculationRequest
 			              {
@@ -119,7 +114,7 @@ namespace CalculationNode
 			{
 				lock (RicardAgrawalaData.QueueLock)
 				{
-					if (!ClientBase.Running)
+					if (!RicardAgrawalaData.Running)
 					{
 						Console.WriteLine("NOT STARTED YET");
 						Thread.Sleep(1000);
@@ -135,6 +130,7 @@ namespace CalculationNode
 							RicardAgrawalaData.IsInterested ? RicardAgrawalaData.RequestTime.ToString() : "-",
 							PeersData.ID);
 						//return RicardAgrawalaData.ExectTime;
+						RicardAgrawalaData.RegisterOperation(id);
 						return true;
 					}
 				}
