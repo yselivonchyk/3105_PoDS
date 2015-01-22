@@ -27,7 +27,7 @@ namespace CalculationNode
 		bool RecieveAccess(int time, int id);
 
 		[XmlRpcMethod("Node.finalizeSession")]
-		void EspaciallyForElchyn();
+		void CalculationStopped();
 
 		//[XmlRpcMethod( "Server.sum")]
 		//bool Sum(int param);

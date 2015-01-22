@@ -138,18 +138,13 @@ namespace CalculationNode
 			}
 		}
 
-		public void EspaciallyForElchyn()
-		{
-			Console.WriteLine("It is, so called, required finalization!");
-		}
+		/// <summary>
+		/// Method requested by Java implementation. To be called after event generation loop has stopped
+		/// </summary>
+		public void CalculationStopped(){}
 
 		private bool HasPriority(int remoteTime, int remoteID)
 		{
-//			Console.WriteLine("l: {0} \tr: {1} \tlid: {2} \trid: {3}",
-//				RicardAgrawalaData.RequestTime,
-//				remoteTime,
-//				PeersData.ID,
-//				remoteID);
 			if (RicardAgrawalaData.RequestTime > remoteTime)
 				return true;
 			if (RicardAgrawalaData.RequestTime < remoteTime)

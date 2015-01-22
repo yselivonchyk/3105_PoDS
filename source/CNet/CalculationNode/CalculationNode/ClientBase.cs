@@ -93,8 +93,16 @@ namespace CalculationNode
 
 			RicardAgrawalaData.Running = true;
 			EventGenerator.Start(this, SesstionLength, EventDelayAvg);
-			// Wait for the late requests from peers.
 
+			var peers = PeersData.GetAll();
+			Parallel.ForEach(peers,
+				peer =>
+				{
+					var siblingProxy = PeersData.GetChannel(peer);
+					siblingProxy.CalculationStopped();
+				});
+
+			// Wait for the late requests from peers.
 			while (RicardAgrawalaData.GetQueueCount() != 0 
 				|| RicardAgrawalaData.TimeFromRequest() < 2000)
 			{
@@ -106,7 +114,7 @@ namespace CalculationNode
 			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}",
 				RicardAgrawalaData.CurrentValue,
 				RicardAgrawalaData.Calculations));
-				
+			
 			RicardAgrawalaData.Running = false;
 		}
 

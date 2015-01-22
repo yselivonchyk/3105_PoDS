@@ -69,7 +69,7 @@ namespace CalculationNode.RicartAgrawala
 					peer =>
 					{
 						var siblingProxy = PeersData.GetChannel(peer);
-						var siblingTime = siblingProxy.RecieveAccess( RicardAgrawalaData.RequestTime, PeersData.ID);
+						siblingProxy.RecieveAccess(RicardAgrawalaData.RequestTime, PeersData.ID);
 						//RicardAgrawalaData.RATimestamp = siblingTime;
 //						Console.WriteLine("-> 1 {2}  {0} is Ok at {1} (r:{3} c:{4})", 
 //							"_", siblingTime, guid, 
