@@ -3,6 +3,7 @@ package TokenRing;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -83,6 +84,7 @@ public class TokenRingClient extends Client implements Runnable {
 		finalizeSession();
 	}
 
+	// Sends token to the next node on the ring
 	public static void sendToken() {
 		try {
 			state = State.RELEASED;
@@ -93,7 +95,6 @@ public class TokenRingClient extends Client implements Runnable {
 			System.err.println("Error while sending token!");
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override
@@ -102,4 +103,12 @@ public class TokenRingClient extends Client implements Runnable {
 		TokenRingServer.finished = true;
 		super.finalizeSession();
 	}
+}
+
+class URLComparator implements Comparator<URL> {
+	public int compare(URL url1, URL url2) {
+		return url1.getAuthority().compareTo(url2.getAuthority());
+
+	}
+
 }

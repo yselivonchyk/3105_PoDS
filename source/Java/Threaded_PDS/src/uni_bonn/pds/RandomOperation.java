@@ -3,11 +3,12 @@ package uni_bonn.pds;
 import java.util.Random;
 import java.util.Vector;
 
+//Class for random operation, waiting time and operation generation
 public class RandomOperation {
 
-	int waitingTimeLimit = 1000;
+	int maximalWaitingTime = 1000;
 	int minimalWaitingTime = 200;
-	int valueLimit = 10;
+	int valueLimit = 9;
 	Vector<Object> operationAndValue = new Vector<Object>();
 
 	Random random = new Random();
@@ -21,8 +22,10 @@ public class RandomOperation {
 		return operations[random.nextInt(4)];
 	}
 
-	public long getRandomWaitingTime() {
-		return (random.nextInt(waitingTimeLimit - minimalWaitingTime) + minimalWaitingTime);
+	public long getRandomWaitingTime() {// Return waiting time between
+										// minimalWaitingTime and
+										// maximalWaitingTime
+		return (random.nextInt(maximalWaitingTime - minimalWaitingTime) + minimalWaitingTime);
 	}
 
 	public Vector<Object> nextOperationAndValue() {

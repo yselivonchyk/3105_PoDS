@@ -37,12 +37,6 @@ public class RAClient extends Client implements Runnable {
 		randomOperation = new RandomOperation();
 	}
 
-	@Override
-	public void join(String memberIPandPort) {
-		super.join(memberIPandPort);
-		LCE.machineID = Client.serverURLs.size();
-	}
-
 	public void enterSection() {
 		// System.out.println("Entering critical area!");
 		lock.lock();
@@ -73,9 +67,8 @@ public class RAClient extends Client implements Runnable {
 		// System.out.println("Exiting critical area!");
 		lock.lock();
 		state = State.RELEASED;
-		condition.signalAll(); //Sending OKs to all waiting nodes
+		condition.signalAll(); // Sending OKs to all waiting nodes
 		lock.unlock();
-
 	}
 
 	@Override
@@ -84,6 +77,7 @@ public class RAClient extends Client implements Runnable {
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
 			enterSection();
 			// System.err.println("Access to critical area obtained!");
+			// Executing calculation on all machines
 			this.executeForAll("Node.doCalculation",
 					randomOperation.nextOperationAndValue());
 			exitSection();

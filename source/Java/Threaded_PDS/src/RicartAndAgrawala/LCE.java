@@ -2,7 +2,7 @@ package RicartAndAgrawala;
 
 public class LCE { // Extended Lamport Clocks
 
-	public static int machineID = 1;
+	public static int machineID;
 	int currentTimeStamp;
 
 	public LCE() {

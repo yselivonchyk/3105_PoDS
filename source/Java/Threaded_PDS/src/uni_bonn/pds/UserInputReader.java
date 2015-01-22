@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import RicartAndAgrawala.LCE;
+import RicartAndAgrawala.RAClient;
+
 public class UserInputReader implements Runnable {
 	Client client;
 	BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -59,7 +62,10 @@ public class UserInputReader implements Runnable {
 			client.printListOfNodes();
 			break;
 		case "info":
-			System.out.println("Node Info: " + Client.currentMachineInfo);
+			System.out.print("Node Info: ".concat(Client.currentMachineInfo));
+			if (client instanceof RAClient)
+				System.out.println(" ID: ".concat(Integer
+						.toString(LCE.machineID)));
 			break;
 		case "help":
 			printOptions();
