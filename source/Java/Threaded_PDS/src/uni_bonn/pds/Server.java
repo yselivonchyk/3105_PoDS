@@ -158,7 +158,8 @@ public class Server {
 
 	public boolean finalizeSession() {
 		finishedSessions++;
-		System.out.println("Finished received! Machines: " + finishedSessions);
+		// System.out.println("Finished received! Machines: " +
+		// finishedSessions);
 		if (finishedSessions == machinesIPs.size()) {
 			System.out.println("SESSION ENDED! FINAL RESULT: "
 					+ processingValue + " Operations performed: "

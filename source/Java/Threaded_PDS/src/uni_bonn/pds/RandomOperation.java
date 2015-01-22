@@ -6,8 +6,8 @@ import java.util.Vector;
 //Class for random operation, waiting time and operation generation
 public class RandomOperation {
 
-	int maximalWaitingTime = 1000;
-	int minimalWaitingTime = 200;
+	int maximalWaitingTime = 2000;
+	int minimalWaitingTime = 500;
 	int valueLimit = 9;
 	Vector<Object> operationAndValue = new Vector<Object>();
 

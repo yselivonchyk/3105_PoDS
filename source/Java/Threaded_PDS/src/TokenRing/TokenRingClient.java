@@ -18,7 +18,7 @@ public class TokenRingClient extends Client implements Runnable {
 	public static boolean started;
 	static Vector<Object> emptyParams = new Vector<>();
 	public static State state;
-	RandomOperation randomOperation = new RandomOperation();
+	RandomOperation randomizer = new RandomOperation();
 	long startTime;
 
 	public static ReentrantLock lock = new ReentrantLock();
@@ -66,6 +66,11 @@ public class TokenRingClient extends Client implements Runnable {
 	public void run() {
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
+			try {
+				Thread.sleep(randomizer.getRandomWaitingTime());
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			lock.lock();
 			try {
 				enterSection();
@@ -73,7 +78,7 @@ public class TokenRingClient extends Client implements Runnable {
 					condition.await();
 				}
 				executeForAll("Node.doCalculation",
-						randomOperation.nextOperationAndValue());
+						randomizer.nextOperationAndValue());
 				exitSection();
 			} catch (InterruptedException e) {
 				e.printStackTrace();

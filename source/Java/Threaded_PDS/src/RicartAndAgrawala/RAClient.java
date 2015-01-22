@@ -20,7 +20,7 @@ public class RAClient extends Client implements Runnable {
 
 	public volatile static Request request;
 	public volatile static State state;
-	RandomOperation randomOperation;
+	RandomOperation randomizer;
 	LCE logClock = RAServer.logClock;
 	long startTime;
 
@@ -34,7 +34,7 @@ public class RAClient extends Client implements Runnable {
 		pool = Executors.newCachedThreadPool();
 		state = State.RELEASED;
 		request = new Request();
-		randomOperation = new RandomOperation();
+		randomizer = new RandomOperation();
 	}
 
 	public void enterSection() {
@@ -75,11 +75,16 @@ public class RAClient extends Client implements Runnable {
 	public void run() {
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
+			try {
+				Thread.sleep(randomizer.getRandomWaitingTime());
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			enterSection();
 			// System.err.println("Access to critical area obtained!");
 			// Executing calculation on all machines
 			this.executeForAll("Node.doCalculation",
-					randomOperation.nextOperationAndValue());
+					randomizer.nextOperationAndValue());
 			exitSection();
 		}
 		finalizeSession();

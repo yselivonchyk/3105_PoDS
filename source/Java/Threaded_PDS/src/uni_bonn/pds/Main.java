@@ -1,48 +1,45 @@
 package uni_bonn.pds;
 
-import java.util.Scanner;
-
 import org.apache.xmlrpc.XmlRpcException;
-
 import RicartAndAgrawala.RAClient;
 import RicartAndAgrawala.RAServer;
 import TokenRing.TokenRingClient;
-import TokenRing.TokenRingServer;
 
 public class Main {
 
-	public static int algorithm;// 1-R&A 0-TokenRing
+	public static int algorithm = 1;// 1-R&A 0-TokenRing
 	public static Client client;
 
 	public static void main(String[] args) throws InterruptedException,
 			XmlRpcException {
-		@SuppressWarnings("resource")
-		Scanner reader = new Scanner(System.in);
+
+		// Scanner reader = new Scanner(System.in);
 		System.out
 				.println("******** Principles of Distributed Systems  WS 14/15 ********\n");
-		System.out
-				.print("Choose algorithm: 0-Token Ring  1-Ricart and Agrawala \n-> ");
-		algorithm = reader.nextInt();
+		// System.out
+		// .print("Choose algorithm: 0-Token Ring  1-Ricart and Agrawala \n-> ");
+		// algorithm = reader.nextInt();
 
 		// Launching server for chosen algorithm
-		switch (algorithm) {
-		case 0:
-			new TokenRingServer().launch();
-			break;
-		case 1:
-			new RAServer().launch();
-			break;
-		default: // exiting in case of wrong input
-			System.err.println("Wrong character! Exiting...");
-			System.exit(0);
-		}
-		reader = null; // We don't need scanner anymore!
+		// switch (algorithm) {
+		// case 0:
+		// new TokenRingServer().launch();
+		// break;
+		// case 1:
+		new RAServer().launch();
+		// break;
+		// default: // exiting in case of wrong input
+		// System.err.println("Wrong character! Exiting...");
+		// System.exit(0);
+		// }
+		// reader = null; // We don't need scanner anymore!
 		// Input reading thread will be used instead
 
-		System.out.println("Node Info:" + Client.currentMachineInfo);
+		System.out.println("Node Info: " + Client.currentMachineInfo);
 
 		// Creating client object to main client commands (join, signOff and
 		// etc.)
+
 		if (algorithm == 0)
 			client = new TokenRingClient();
 		else
