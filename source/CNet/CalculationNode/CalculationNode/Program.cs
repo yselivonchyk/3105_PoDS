@@ -50,7 +50,9 @@ namespace CalculationNode
 						ricartAgrawalaClient.SingOff();
 						break;
 					case ConsoleKey.D3:
-						ricartAgrawalaClient.Start(5);
+						var seed = (new Random().Next(1, 10));
+						ConsoleExtentions.Log("Seed Data: " + seed);
+						ricartAgrawalaClient.Start(seed);
 						break;
 					case ConsoleKey.D8:
 						ConsoleExtentions.Regresh();

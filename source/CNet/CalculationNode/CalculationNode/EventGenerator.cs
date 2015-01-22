@@ -15,9 +15,9 @@ namespace CalculationNode
 		/// <param name="avgDelay">average delay between events in milliseconds</param>
 		public static void Start(ClientBase client, int sessionLength, int avgDelay)
 		{
-			var generator = new Random(AppDomain.CurrentDomain.GetHashCode() + PeersData.ID);
+			var generator = new Random(AppDomain.CurrentDomain.GetHashCode() + PeersData.LocalID);
 			var watch = Stopwatch.StartNew();
-			Console.WriteLine("Genarator seed: " + (generator.GetHashCode() + PeersData.ID));
+			Console.WriteLine("Genarator seed: " + (generator.GetHashCode() + PeersData.LocalID));
 			var localEvents = 0;
 			while (true)
 			{
@@ -32,7 +32,7 @@ namespace CalculationNode
 					Console.WriteLine("\r\nGenerated {0} events localy", localEvents);
 					return;
 				}
-				//ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " t:" + RicardAgrawalaData.ExectTime);
+				//ConsoleExtentions.Log("Local event: " + param + " " + (Operations)operation + " t:" + RicardAgrawalaData.ExactTime);
 				localEvents++;
 				switch ((Operations)operation)
 				{

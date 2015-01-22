@@ -4,9 +4,16 @@ namespace CalculationNode
 {
 	public static class ConsoleExtentions
 	{
+		public static void Warning(string s)
+		{
+			Console.BackgroundColor = ConsoleColor.Red;
+			Log(s);
+			Console.BackgroundColor = ConsoleColor.Black;
+		}
+
 		public static void Log(string message)
 		{
-			var log = String.Format("{0}: {1}", DateTime.Now.ToLongTimeString(), message);
+			var log = String.Format("{0}: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), message);
 			Console.WriteLine(log);
 		}
 

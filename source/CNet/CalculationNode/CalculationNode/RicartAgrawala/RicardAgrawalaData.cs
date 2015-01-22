@@ -7,18 +7,20 @@ namespace CalculationNode.RicartAgrawala
 	public static class RicardAgrawalaData
 	{
 		private static long _currentValue;
-		private static DateTime _lastRequestTS;
-
-		private static Dictionary<int, int> _operations;
-
+		private static bool _isInterested;
 		private static bool _running;
+		private static DateTime _lastRequestTS;
+		private static Dictionary<int, int> _operations;
+		private static List<CalculationRequest> Queue { get; set; }
+		
+		public static int RequestTime;
+		public static int Calculations { get; set; }
+		public static int ExactTime { get; private set; }
+		public static Object QueueLock = new object();
 
 		public static bool Running
 		{
-			get
-			{
-				return _running;
-			}
+			get { return _running; }
 			set
 			{
 				if (value)
@@ -36,45 +38,40 @@ namespace CalculationNode.RicartAgrawala
 				_lastRequestTS = DateTime.Now;
 			}
 		}
-		public static int Calculations { get; set; }
-
-		public static Object QueueLock = new object();
-		private static List<CalculationRequest> Queue { get; set; }
-
-		public static int ExectTime { get; private set; }
-
-		public static int RATimestamp
-		{
-			get
-			{
-				return ++ExectTime;
-			}
-			set
-			{
-				if (value > ExectTime)
-					ExectTime = value;
-//				else
-//					ExectTime++;
-			}
-		}
-
-		private static bool _isInterested;
+		
 		public static bool IsInterested
 		{
 			get { return _isInterested; }
 			set
 			{
-				RequestTime = RATimestamp;
+				RequestTime = IncrementClock();
 				_isInterested = value;
 			}
 		}
 
-		public static int RequestTime;
-
+		
 		static RicardAgrawalaData()
 		{
 			Queue = new List<CalculationRequest>();
 		}
+
+
+		#region Lamport Clock
+
+		public static int IncrementClock()
+		{
+			return ++ExactTime;
+		}
+
+		public static int UpdateClock(int candidateValue)
+		{
+			if (candidateValue > ExactTime)
+				ExactTime = candidateValue;
+			return ExactTime;
+		}
+
+		#endregion Lamport Clock
+
 
 
 		#region Request Queue
@@ -84,24 +81,24 @@ namespace CalculationNode.RicartAgrawala
 			lock (QueueLock)
 			{
 				Queue.Add(request);
-				Queue = Queue.OrderBy(x => x.Time).ThenBy(x => x.Address).ToList();
+				Queue = Queue.OrderBy(x => x.Time).ThenBy(x => x.CallerID).ToList();
 
 				//debug
 				if (Queue.Count() <= 1) return;
 				Console.WriteLine("\r\n Local time: {0}, Is interested: {1} at {2}", 
-					ExectTime, IsInterested, RequestTime);
+					ExactTime, IsInterested, RequestTime);
 				foreach (var calculationRequest in Queue.ToList())
-					Console.WriteLine(calculationRequest.Time + " " + calculationRequest.Address);
+					Console.WriteLine(calculationRequest.Time + " " + calculationRequest.CallerID);
 			}
 		}
 
-		public static CalculationRequest PopRequest(CalculationRequest request)
+		public static void PopRequest(CalculationRequest request)
 		{
 			lock (QueueLock)
 			{
 				Queue.Remove(request);
-				return request;
 			}
+			RegisterOperation(request.CallerID);
 		}
 
 		public static int GetQueueCount()
@@ -115,6 +112,10 @@ namespace CalculationNode.RicartAgrawala
 		}
 
 		#endregion Request Queue
+
+
+
+		#region Statistics
 
 		public static void ResetStats()
 		{
@@ -133,8 +134,10 @@ namespace CalculationNode.RicartAgrawala
 		{
 			foreach (var pair in _operations)
 			{
-				Console.WriteLine("Recieved {0} REC_REQUEST calls from ID:{1}", pair.Value, pair.Key);
+				Console.WriteLine("Recieved {0} REC_REQUEST calls from LocalID:{1}", pair.Value, pair.Key);
 			}
 		}
+
+		#endregion Statistics
 	}
 }

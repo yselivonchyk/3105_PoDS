@@ -7,17 +7,16 @@ using CookComputing.XmlRpc;
 namespace CalculationNode
 {
 	/// <summary>
-	/// Class caries data about fellow nodes that should be shared between all threads.
+	/// Class caries data about peers that should be shared between all threads.
 	/// Also contains method for managing list of peers
 	/// </summary>
 	public static class PeersData
 	{
+		public static int LocalID;
 		public static ClientBase LocalClient { get; set; }
 
 		internal static Dictionary<String, IRicardAgrawalaProxy> Fellows =
 			new Dictionary<String, IRicardAgrawalaProxy>();
-
-		public static int ID;
 
 		public static void Add(string address)
 		{
@@ -68,7 +67,7 @@ namespace CalculationNode
 		public static void ListPeers()
 		{
 			Console.WriteLine("\n\rPeers data:");
-			foreach (var peer in PeersData.GetAll().OrderBy(x => x))
+			foreach (var peer in GetAll().OrderBy(x => x))
 			{
 				Console.WriteLine(peer);
 			}

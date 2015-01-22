@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CalculationNode.RicartAgrawala;
@@ -8,8 +7,6 @@ namespace CalculationNode
 {
 	public class RicartAgrawalaServer : MarshalByRefObject, IRicartAgrawalaServer
 	{
-		public List<String> Fellows = new List<String>();
-
 		public long CurrentValue
 		{
 			get { return RicardAgrawalaData.CurrentValue; }
@@ -23,6 +20,7 @@ namespace CalculationNode
 		{
 			ConsoleExtentions.Regresh();
 			ConsoleExtentions.Log("Join: " + address);
+
 			PeersData.Add(address);
 			return PeersData.GetAll().Select(x => (Object)x).ToArray();
 		}
@@ -39,19 +37,14 @@ namespace CalculationNode
 		{
 			ConsoleExtentions.Log("Server start recieved: " + seed);
 			CurrentValue = seed;
-			var t = new Thread(x => PeersData.LocalClient.StartSelf(seed));
-			t.Start();
+			(new Thread(x => PeersData.LocalClient.StartSelf(seed))).Start();
 			return true;
 		}
 
 		public bool DoCalculation(string operation, int value)
 		{
 			if (!RicardAgrawalaData.Running)
-			{
-				Console.BackgroundColor = ConsoleColor.Red;
-				Console.WriteLine("WARNING! Calculation request before server even started!!!");
-				Console.BackgroundColor = ConsoleColor.Black;
-			}
+				ConsoleExtentions.Warning("WARNING! Calculation request before server even started!!!");
 
 			RicardAgrawalaData.Calculations++;
 			var original = CurrentValue;
@@ -79,19 +72,10 @@ namespace CalculationNode
 			return true;
 		}
 
-		public bool DoCalculation(string operation, int value, int final)
-		{
-			var initial = RicardAgrawalaData.CurrentValue;
-			DoCalculation(operation, value);
-			if (final == initial)
-				return true;
-			else
-			{
-				Console.WriteLine("I have done something wrong :(  my: {0} - {1} : expected", initial.ToString("D20"), final.ToString("D20"));
-				Thread.Sleep(1000);
-				return false;
-			}
-		}
+		/// <summary>
+		/// Method requested by Java implementation. To be called after event generation loop has stopped
+		/// </summary>
+		public void CalculationStopped() { }
 
 		/// <summary>
 		/// Controll access to critical section giving one positive responce at a time
@@ -101,37 +85,29 @@ namespace CalculationNode
 		/// <returns>current timestemp</returns>
 		public bool RecieveAccess(int time, int id)
 		{
-			RicardAgrawalaData.RATimestamp = time;
+			RicardAgrawalaData.UpdateClock(time);
 			// create request object
 			var request = new CalculationRequest
 			              {
-				              Address = id.ToString(),
 				              Time = time,
-				              Guid = Guid.NewGuid()
+				              Guid = Guid.NewGuid(),
+							  CallerID = id
 			              };
 			// place into queue
 			RicardAgrawalaData.AddRequest(request);
+			if (!RicardAgrawalaData.Running)
+				ConsoleExtentions.Warning("Add request recieved before server started. Request put on hold");
+
+			// Main await loop
 			while (true)
 			{
 				lock (RicardAgrawalaData.QueueLock)
 				{
-					if (!RicardAgrawalaData.Running)
-					{
-						Console.WriteLine("NOT STARTED YET");
-						Thread.Sleep(1000);
-						continue;
-					}
-					if (PeersData.ID == id 
+					if (PeersData.LocalID == id 
 						|| !RicardAgrawalaData.IsInterested 
 						|| HasPriority(time, id))
 					{
-						RicardAgrawalaData.PopRequest(request);
-						Console.WriteLine("\tSend OK (ID:{1} T:{0}) MY(T:{2} RT:{3} ID:{4})", time, id, 
-							RicardAgrawalaData.ExectTime,
-							RicardAgrawalaData.IsInterested ? RicardAgrawalaData.RequestTime.ToString() : "-",
-							PeersData.ID);
-						//return RicardAgrawalaData.ExectTime;
-						RicardAgrawalaData.RegisterOperation(id);
+						LogSuccessAccessRequest(request);
 						return true;
 					}
 				}
@@ -139,18 +115,24 @@ namespace CalculationNode
 			}
 		}
 
-		/// <summary>
-		/// Method requested by Java implementation. To be called after event generation loop has stopped
-		/// </summary>
-		public void CalculationStopped(){}
 
-		private bool HasPriority(int remoteTime, int remoteID)
+		private static void LogSuccessAccessRequest(CalculationRequest request)
+		{
+			Console.WriteLine("\tSend OK (LocalID:{1} T:{0}) MY(T:{2} RT:{3} LocalID:{4})", request.Time, request.CallerID,
+				RicardAgrawalaData.ExactTime,
+				RicardAgrawalaData.IsInterested ? RicardAgrawalaData.RequestTime.ToString() : "-",
+				PeersData.LocalID);
+
+			RicardAgrawalaData.PopRequest(request);
+		}
+
+		private static bool HasPriority(int remoteTime, int remoteID)
 		{
 			if (RicardAgrawalaData.RequestTime > remoteTime)
 				return true;
 			if (RicardAgrawalaData.RequestTime < remoteTime)
 				return false;
-			return remoteID < PeersData.ID;
+			return remoteID < PeersData.LocalID;
 		}
 	}
 }
