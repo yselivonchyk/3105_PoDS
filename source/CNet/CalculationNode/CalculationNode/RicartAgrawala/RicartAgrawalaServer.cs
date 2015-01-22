@@ -31,6 +31,7 @@ namespace CalculationNode
 		{
 			ConsoleExtentions.Log(String.Format("Sign off request from {0}", address));
 			PeersData.Remove(address);
+			PeersData.ListPeers();
 			return true;
 		}
 

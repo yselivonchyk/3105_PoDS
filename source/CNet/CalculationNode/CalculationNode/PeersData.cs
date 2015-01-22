@@ -64,5 +64,14 @@ namespace CalculationNode
 		{
 			return Fellows.Any();
 		}
+
+		public static void ListPeers()
+		{
+			Console.WriteLine("\n\rPeers data:");
+			foreach (var peer in PeersData.GetAll().OrderBy(x => x))
+			{
+				Console.WriteLine(peer);
+			}
+		}
 	}
 }

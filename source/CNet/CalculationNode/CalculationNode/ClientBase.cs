@@ -57,17 +57,11 @@ namespace CalculationNode
 
 		public void SingOff()
 		{
-			ConsoleExtentions.Log("Empty request recieved.");
-
-			foreach (var peer in PeersData.GetAll())
-			{
-				var siblingProxy = PeersData.GetChannel(peer);
-				siblingProxy.SignOff(LocalServerAddress);
-			}
-
-			Parallel.ForEach(PeersData.GetAll(),
+			Parallel.ForEach(PeersData.GetAll().Where(p => p != LocalServerAddress),
 				peer => PeersData.GetChannel(peer).SignOff(LocalServerAddress));
 			PeersData.Empty();
+			// Join self back again
+			JoinSingle(new Uri(LocalServerAddress));
 		}
 
 		public void Start(int seed)
@@ -78,10 +72,9 @@ namespace CalculationNode
 			Parallel.ForEach(PeersData.GetAll(),
 				peer =>
 				{
-					Console.WriteLine("Send start request send: {0} - {1} ", seed, peer);
 					var siblingProxy = PeersData.GetChannel(peer);
 					siblingProxy.Start(seed);
-					Console.WriteLine("Finished start request: {0} - {1} ", seed, peer);
+					Console.WriteLine("Finished start request with seed '{0}' for peer '{1}'", seed, peer);
 				});
 			Console.WriteLine("\r\n\r\n");
 		}

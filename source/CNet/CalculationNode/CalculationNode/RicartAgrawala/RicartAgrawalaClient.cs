@@ -96,14 +96,5 @@ namespace CalculationNode.RicartAgrawala
 				RicardAgrawalaData.IsInterested = false;
 			}
 		}
-
-		public void ListPeers()
-		{
-			Console.WriteLine("\n\rPeers data:");
-			foreach (var peer in PeersData.GetAll().OrderBy(x => x))
-			{
-				Console.WriteLine(peer);
-			}
-		}
 	}
 }

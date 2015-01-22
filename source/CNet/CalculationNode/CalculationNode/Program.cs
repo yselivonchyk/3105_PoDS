@@ -56,7 +56,7 @@ namespace CalculationNode
 						ConsoleExtentions.Regresh();
 						break;
 					case ConsoleKey.D9:
-						ricartAgrawalaClient.ListPeers();
+						PeersData.ListPeers();
 						break;
 					case ConsoleKey.Escape:
 						return;
