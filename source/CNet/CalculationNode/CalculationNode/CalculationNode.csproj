@@ -68,6 +68,7 @@
     <Compile Include="Extentions\ConsoleExtentions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extentions\NetworkExtentions.cs" />
+    <Compile Include="Extentions\StringExtentions.cs" />
     <Compile Include="RicartAgrawala\CalculationRequest.cs" />
     <Compile Include="RicartAgrawala\IRicartAgrawalaServer.cs" />
     <Compile Include="IClient.cs" />

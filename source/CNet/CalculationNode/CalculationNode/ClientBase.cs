@@ -31,8 +31,6 @@ namespace CalculationNode
 				JoinSingle(new Uri(LocalServerAddress));
 			// save information about known node
 			var peers = JoinSingle(knownNodeUri).Select(NetworkExtentions.TryBuildServerUri);
-			PeersData.LocalID = peers.Count();
-			ConsoleExtentions.Log("Local LocalID: " + PeersData.LocalID);
 			var undiscoveredNodesAddresses = peers
 				.Where(x => knownNodeUri != x && LocalServerAddress != x.ToString());
 			// Make parallel non-blocking call to all other nodes

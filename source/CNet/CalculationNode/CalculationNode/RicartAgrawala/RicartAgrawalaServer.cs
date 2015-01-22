@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using CalculationNode.Extentions;
 using CalculationNode.RicartAgrawala;
 
 namespace CalculationNode
@@ -37,6 +38,11 @@ namespace CalculationNode
 		{
 			ConsoleExtentions.Log("Server start recieved: " + seed);
 			CurrentValue = seed;
+			// Calculate local ID
+			PeersData.LocalID = PeersData.GetAll()
+				.Count(x => PeersData.LocalClient.LocalServerAddress.GrossPlatformCompare(x)) + 1;
+			ConsoleExtentions.Log("Local ID: " + PeersData.LocalID);
+
 			(new Thread(x => PeersData.LocalClient.StartSelf(seed))).Start();
 			return true;
 		}
