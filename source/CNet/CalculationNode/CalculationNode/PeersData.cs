@@ -78,8 +78,18 @@ namespace CalculationNode
 			Console.WriteLine("\n\rPeers data:");
 			foreach (var peer in GetAll().OrderBy(x => x))
 			{
-				Console.WriteLine(peer);
+				Console.WriteLine(peer + " ID: " + GetPeerID(peer));
 			}
+		}
+
+		public static void SetLocalID()
+		{
+			LocalID = GetPeerID(LocalClient.LocalServerAddress);
+		}
+
+		public static int GetPeerID(string id)
+		{
+			return GetAll().Count(id.GrossPlatformCompare) + 1;
 		}
 	}
 }
