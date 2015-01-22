@@ -76,10 +76,8 @@ public class Client {
 		/* Telling all machines about leaving */
 		if (serverURLs.size() > 1) {
 			System.out.println("Signing off...");
-
 			URL[] a = new URL[serverURLs.size()];
 			a = serverURLs.toArray(a);
-
 			for (URL url : a) {
 				config.setServerURL(url);
 				xmlRpcClient.setConfig(config);
@@ -143,5 +141,4 @@ public class Client {
 	public static String urlFormatter(String ipAndPort) {
 		return "http://".concat(ipAndPort).concat("/xmlrpc");
 	}
-
-}//
+}

@@ -1,7 +1,5 @@
 package RicartAndAgrawala;
 
-import java.util.Arrays;
-
 import uni_bonn.pds.Client;
 import uni_bonn.pds.Client.State;
 import uni_bonn.pds.Server;
@@ -40,17 +38,11 @@ public class RAServer extends Server {
 	private void determineID() {
 		String ips[] = new String[machinesIPs.size()];
 		RAServer.machinesIPs.toArray(ips);
-		Arrays.sort(ips);
-
-		System.out.println("Sorted IPs Ordering:");
-		for (int i = 0; i < ips.length; i++) {
-			System.out.println(ips[i]);
-		}
-
+		// System.out.println(Arrays.toString(ips));
 		for (int i = 0; i < ips.length; i++) {
 			if (ips[i].compareTo(Client.currentMachineInfo) == 0)
 				LCE.machineID = i + 1;
 		}
-		System.out.println("Local ID: " + LCE.machineID);
+		// System.out.println("Local ID: " + LCE.machineID);
 	}
 }

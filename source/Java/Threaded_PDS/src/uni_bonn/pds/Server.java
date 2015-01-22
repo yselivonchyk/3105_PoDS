@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
@@ -26,7 +26,7 @@ public class Server {
 	public static final int PORT = findFreePort();
 
 	// Holds IPs of network nodes
-	public static HashSet<String> machinesIPs = new HashSet<String>();
+	public static TreeSet<String> machinesIPs = new TreeSet<String>();
 
 	/* Creates WebServer and starts it */
 	public void launch() {
