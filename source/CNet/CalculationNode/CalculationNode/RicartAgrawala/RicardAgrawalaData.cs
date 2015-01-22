@@ -10,7 +10,7 @@ namespace CalculationNode.RicartAgrawala
 		private static bool _isInterested;
 		private static bool _running;
 		private static DateTime _lastRequestTS;
-		private static Dictionary<int, int> _operations;
+		private static Dictionary<int, int> _operations = new Dictionary<int, int>();
 		private static List<CalculationRequest> Queue { get; set; }
 		
 		public static int RequestTime;
