@@ -59,6 +59,15 @@ namespace CalculationNode
 			return Fellows.Keys.ToArray();
 		}
 
+		public static IRicardAgrawalaProxy[] GetChannels(Func<String, bool> func = null)
+		{
+			if (func == null)
+				return Fellows.Values.ToArray();
+
+			var proper = Fellows.Keys.Where(func);
+			return Fellows.Join(proper, x => x.Key, y => y, (x, y) => x.Value).ToArray();
+		}
+
 		public static bool HasAny()
 		{
 			return Fellows.Any();

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using CookComputing.XmlRpc;
 
@@ -56,27 +54,21 @@ namespace CalculationNode.RicartAgrawala
 			PerformOperation("mul", param);
 		}
 
-		private void PerformOperation(string op, int param)
+		private static void PerformOperation(string op, int param)
 		{
 			// One request at a time
 			lock (outgoingRequestCS)
 			{
 				RicardAgrawalaData.IsInterested = true;
 
-				var peers = PeersData.GetAll();
+				var peers = PeersData.GetChannels();
 				Parallel.ForEach(peers,
-					peer =>
-					{
-						var siblingProxy = PeersData.GetChannel(peer);
-						siblingProxy.RecieveAccess(RicardAgrawalaData.RequestTime, PeersData.LocalID);
-					});
-
+					proxy => proxy.RecieveAccess(RicardAgrawalaData.RequestTime, PeersData.LocalID));
 				Parallel.ForEach(peers,
-					peer =>
+					proxy =>
 					{
-						var siblingProxy = PeersData.GetChannel(peer);
-						if (!siblingProxy.DoCalculation(op, param))
-							ConsoleExtentions.Warning("This guy messed up: " + peer);
+						if (!proxy.DoCalculation(op, param))
+							ConsoleExtentions.Warning("Calculation was not performed" + proxy.Url);
 					});
 
 				RicardAgrawalaData.IsInterested = false;

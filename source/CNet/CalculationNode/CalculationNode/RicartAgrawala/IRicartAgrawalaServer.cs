@@ -20,26 +20,11 @@ namespace CalculationNode
 		[XmlRpcMethod("Node.doCalculation")]
 		bool DoCalculation(String operation, int value);
 
-//		[XmlRpcMethod("Node.doTestCalc")]
-//		bool DoCalculation(String operation, int value, int final);
-
 		[XmlRpcMethod("Node.receiveRequest")]
 		bool RecieveAccess(int time, int id);
 
 		[XmlRpcMethod("Node.finalizeSession")]
 		void CalculationStopped();
-
-		//[XmlRpcMethod( "Server.sum")]
-		//bool Sum(int param);
-
-		//[XmlRpcMethod( "Server.substract")]
-		//bool Subtract(int param);
-
-		//[XmlRpcMethod( "Server.divide")]
-		//bool Divide(int param);
-
-		//[XmlRpcMethod( "Server.multiply")]
-		//bool Multiply(int param);
     }
 
 	/// <summary>

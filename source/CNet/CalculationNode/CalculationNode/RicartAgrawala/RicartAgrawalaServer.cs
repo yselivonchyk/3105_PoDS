@@ -44,7 +44,7 @@ namespace CalculationNode
 		public bool DoCalculation(string operation, int value)
 		{
 			if (!RicardAgrawalaData.Running)
-				ConsoleExtentions.Warning("WARNING! Calculation request before server even started!!!");
+				ConsoleExtentions.Error("WARNING! Calculation request before server even started!!!");
 
 			RicardAgrawalaData.Calculations++;
 			var original = CurrentValue;

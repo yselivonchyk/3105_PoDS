@@ -57,8 +57,8 @@ namespace CalculationNode
 
 		public void SingOff()
 		{
-			Parallel.ForEach(PeersData.GetAll().Where(p => p != LocalServerAddress),
-				peer => PeersData.GetChannel(peer).SignOff(LocalServerAddress));
+			Parallel.ForEach(PeersData.GetChannels(p => p != LocalServerAddress),
+				proxy => proxy.SignOff(LocalServerAddress));
 			PeersData.Empty();
 			// Join self back again
 			JoinSingle(new Uri(LocalServerAddress));
@@ -69,12 +69,11 @@ namespace CalculationNode
 			if (RicardAgrawalaData.Running)
 				return;
 
-			Parallel.ForEach(PeersData.GetAll(),
-				peer =>
+			Parallel.ForEach(PeersData.GetChannels(),
+				proxy =>
 				{
-					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.Start(seed);
-					Console.WriteLine("Finished start request with seed '{0}' for peer '{1}'", seed, peer);
+					proxy.Start(seed);
+					Console.WriteLine("Finished start request with seed '{0}' for peer '{1}'", seed, proxy.Url);
 				});
 			Console.WriteLine("\r\n\r\n");
 		}
@@ -87,28 +86,20 @@ namespace CalculationNode
 			RicardAgrawalaData.Running = true;
 			EventGenerator.Start(this, SesstionLength, EventDelayAvg);
 
-			var peers = PeersData.GetAll();
-			Parallel.ForEach(peers,
-				peer =>
-				{
-					var siblingProxy = PeersData.GetChannel(peer);
-					siblingProxy.CalculationStopped();
-				});
+			Parallel.ForEach(PeersData.GetChannels(), proxy => proxy.CalculationStopped());
 
 			// Wait for the late requests from peers.
-			while (RicardAgrawalaData.GetQueueCount() != 0 
-				|| RicardAgrawalaData.TimeFromRequest() < 2000)
+			while (RicardAgrawalaData.GetQueueCount() != 0 || RicardAgrawalaData.TimeFromRequest() < 2000)
 			{
 				Thread.Sleep(250);
 			}
 
-			RicardAgrawalaData.PrintStats();
+			RicardAgrawalaData.Running = false;
 
+			RicardAgrawalaData.PrintStats();
 			ConsoleExtentions.Log(String.Format("Final value after {1} calculations: {0}",
 				RicardAgrawalaData.CurrentValue,
 				RicardAgrawalaData.Calculations));
-			
-			RicardAgrawalaData.Running = false;
 		}
 
 		public abstract void Sum(int param);

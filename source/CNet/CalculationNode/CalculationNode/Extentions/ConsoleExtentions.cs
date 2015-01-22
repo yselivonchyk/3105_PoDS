@@ -4,9 +4,16 @@ namespace CalculationNode
 {
 	public static class ConsoleExtentions
 	{
-		public static void Warning(string s)
+		public static void Error(string s)
 		{
 			Console.BackgroundColor = ConsoleColor.Red;
+			Log(s);
+			Console.BackgroundColor = ConsoleColor.Black;
+		}
+
+		public static void Warning(string s)
+		{
+			Console.BackgroundColor = ConsoleColor.Yellow;
 			Log(s);
 			Console.BackgroundColor = ConsoleColor.Black;
 		}
