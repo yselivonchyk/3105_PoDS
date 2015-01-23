@@ -2,6 +2,7 @@ package RicartAndAgrawala;
 
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +29,7 @@ public class RAClient extends Client implements Runnable {
 	public static Condition condition = lock.newCondition();
 
 	ExecutorService pool;
+	Vector<RequestSender> requestSenders = new Vector<RequestSender>();
 	LinkedList<Future<Boolean>> oKs = new LinkedList<Future<Boolean>>();
 
 	public RAClient() {
@@ -47,8 +49,8 @@ public class RAClient extends Client implements Runnable {
 
 		// Sending requests to all node
 		// and waiting for OKs
-		for (URL url : serverURLs)
-			oKs.add(pool.submit(new RequestSender(url, request)));
+		for (RequestSender rs : requestSenders)
+			oKs.add(pool.submit(rs));
 		boolean notListen = false;
 		while (!notListen) {
 			notListen = true;
@@ -57,7 +59,6 @@ public class RAClient extends Client implements Runnable {
 			}
 		}
 		oKs.clear();
-
 		lock.lock();
 		state = State.HELD;
 		lock.unlock();
@@ -71,8 +72,14 @@ public class RAClient extends Client implements Runnable {
 		lock.unlock();
 	}
 
+	public void createRequestSenders() {
+		for (URL url : serverURLs)
+			requestSenders.add(new RequestSender(url));
+	}
+
 	@Override
 	public void run() {
+		createRequestSenders();
 		startTime = System.currentTimeMillis();
 		while (SESSION_LENGTH > System.currentTimeMillis() - startTime) {
 			try {
@@ -95,11 +102,10 @@ class RequestSender implements Callable<Boolean> {
 	XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 	XmlRpcClient xmlRpcClient = new XmlRpcClient();
 	URL url;
-	Request req;
+	Request req = RAClient.request;
 
-	public RequestSender(URL url, Request req) {
+	public RequestSender(URL url) {
 		this.url = url;
-		this.req = req;
 	}
 
 	public Boolean call() {
