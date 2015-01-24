@@ -20,7 +20,7 @@ import uni_bonn.pds.RandomOperation;
 public class RAClient extends Client implements Runnable {
 
 	public volatile static Request request;
-	public volatile static State state;
+	public static State state;
 	RandomOperation randomizer;
 	LCE logClock = RAServer.logClock;
 	long startTime;
@@ -34,8 +34,10 @@ public class RAClient extends Client implements Runnable {
 
 	public RAClient() {
 		pool = Executors.newCachedThreadPool();
+		lock.lock();
 		state = State.RELEASED;
 		request = new Request();
+		lock.unlock();
 		randomizer = new RandomOperation();
 	}
 
@@ -47,10 +49,8 @@ public class RAClient extends Client implements Runnable {
 		state = State.WANTED;
 		lock.unlock();
 
-		// Sending requests to all node
-		// and waiting for OKs
-		for (RequestSender rs : requestSenders)
-			oKs.add(pool.submit(rs));
+		// Sending requests to all node and waiting for OKs
+		requestSenders.forEach(x -> oKs.add(pool.submit(x)));
 		boolean notListen = false;
 		while (!notListen) {
 			notListen = true;
@@ -73,8 +73,7 @@ public class RAClient extends Client implements Runnable {
 	}
 
 	public void createRequestSenders() {
-		for (URL url : serverURLs)
-			requestSenders.add(new RequestSender(url));
+		serverURLs.forEach(url -> requestSenders.add(new RequestSender(url)));
 	}
 
 	@Override
