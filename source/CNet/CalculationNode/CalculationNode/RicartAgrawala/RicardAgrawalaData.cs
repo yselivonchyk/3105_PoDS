@@ -82,13 +82,6 @@ namespace CalculationNode.RicartAgrawala
 			{
 				Queue.Add(request);
 				Queue = Queue.OrderBy(x => x.Time).ThenBy(x => x.CallerID).ToList();
-
-				//debug
-				if (Queue.Count() <= 1) return;
-				Console.WriteLine("\r\n Local time: {0}, Is interested: {1} at {2}", 
-					ExactTime, IsInterested, RequestTime);
-				foreach (var calculationRequest in Queue.ToList())
-					Console.WriteLine(calculationRequest.Time + " " + calculationRequest.CallerID);
 			}
 		}
 

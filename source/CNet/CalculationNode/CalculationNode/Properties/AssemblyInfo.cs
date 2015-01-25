@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CalculationNode")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("PDS project implementation PDS1415_2")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Yauheni Selivonchyk, Elchin Valiyev, Yi Chen, Yujie Diao")]
 [assembly: AssemblyProduct("CalculationNode")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the LocalID of the typelib if this project is exposed to COM
-[assembly: Guid("a6642c5d-05a0-41ea-93c3-c4f688edcc02")]
+[assembly: Guid("a6642c5d-05a0-41ea-93c3-c4f608edcc02")]
 
 // Version information for an assembly consists of the following four values:
 //

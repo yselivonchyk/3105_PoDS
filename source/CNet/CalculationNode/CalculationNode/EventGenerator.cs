@@ -19,12 +19,16 @@ namespace CalculationNode
 			var watch = Stopwatch.StartNew();
 			Console.WriteLine("Genarator seed: " + (generator.GetHashCode() + PeersData.LocalID));
 			var localEvents = 0;
+			var previousTime = 0;
 			while (true)
 			{
 				var operation = generator.Next(3);
 				var param = generator.Next(2, 10);
-				var wait = Convert.ToInt32(avgDelay + 0.9 * generator.Next((-1)*avgDelay, avgDelay));
-				Thread.Sleep(wait);
+				var wait = previousTime + Convert.ToInt32(avgDelay + 0.9 * generator.Next((-1)*avgDelay, avgDelay));
+
+				if(watch.ElapsedMilliseconds < wait)
+					Thread.Sleep(wait - (int)watch.ElapsedMilliseconds);
+				previousTime = (int)watch.ElapsedMilliseconds;
 
 				// termination condition
 				if (watch.ElapsedMilliseconds > sessionLength)

@@ -10,8 +10,8 @@ namespace CalculationNode
 {
 	public abstract class ClientBase : IClient, IDisposable
 	{
-		public const int SesstionLength = 2000;
-		public const int EventDelayAvg = 50;
+		public const int SesstionLength = 20000;
+		public const int EventDelayAvg = 900;
 
 		protected Uri BaseServerUri;
 		protected ServiceHost HostObject;
